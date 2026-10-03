@@ -1,0 +1,31 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('criteria', function (Blueprint $table) {
+            $table->id();
+            $table->string('code', 10)->unique(); // K1, K2, K3, K4
+            $table->string('name', 100);
+            $table->string('type', 20)->default('benefit'); // benefit / cost
+            $table->text('description')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('criteria');
+    }
+};
