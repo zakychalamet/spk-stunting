@@ -16,6 +16,9 @@ class Calculation extends Component
     public int $countSedang = 0;
     public int $countRendah = 0;
 
+    public string $search = '';
+    public string $filterPriority = '';
+
     public function mount()
     {
         $this->activeAhp = AhpCalculation::with('weights.criterion')->where('is_active', true)->latest()->first();
@@ -56,7 +59,21 @@ class Calculation extends Component
 
     public function render()
     {
-        $results = TopsisResult::with('ibuHamil')->orderBy('rank', 'asc')->get();
+        $query = TopsisResult::with('ibuHamil')->orderBy('rank', 'asc');
+
+        if (!empty($this->search)) {
+            $query->whereHas('ibuHamil', function ($q) {
+                $q->where('nama', 'like', '%' . $this->search . '%')
+                  ->orWhere('kode_ibu_hamil', 'like', '%' . $this->search . '%')
+                  ->orWhere('desa_kelurahan', 'like', '%' . $this->search . '%');
+            });
+        }
+
+        if (!empty($this->filterPriority)) {
+            $query->where('priority', $this->filterPriority);
+        }
+
+        $results = $query->get();
 
         return view('livewire.topsis.calculation', [
             'results' => $results,

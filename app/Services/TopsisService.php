@@ -17,30 +17,36 @@ class TopsisService
      */
     public function getCriterionScores(IbuHamil $ibuHamil): array
     {
-        // 1. Anemia (K1)
-        // >=11 -> 1; 10-10.9 -> 2; 7-9.9 -> 3; <7 -> 4
-        $hb = $ibuHamil->kadar_hb;
-        $statusAnemia = strtolower((string) $ibuHamil->status_anemia);
+        // 1. Status Anemia (K1)
+        // Skor risiko berdasarkan rentang status anemia dari data ibu hamil:
+        // Normal (>= 11) -> Skor 1 (Risiko Normal)
+        // Ringan (10 - 10.9) -> Skor 2 (Risiko Rendah)
+        // Sedang (7 - 9.9) -> Skor 3 (Risiko Sedang)
+        // Berat (< 7) -> Skor 4 (Risiko Tinggi)
+        $statusAnemia = strtolower(trim((string) $ibuHamil->status_anemia));
         $scoreAnemia = 1;
-        if ($hb !== null && $hb > 0) {
-            if ($hb >= 11.0) {
-                $scoreAnemia = 1;
-            } elseif ($hb >= 10.0) {
-                $scoreAnemia = 2;
-            } elseif ($hb >= 7.0) {
-                $scoreAnemia = 3;
-            } else {
-                $scoreAnemia = 4;
-            }
+
+        if (str_contains($statusAnemia, 'berat') || str_contains($statusAnemia, '< 7') || str_contains($statusAnemia, '<7')) {
+            $scoreAnemia = 4;
+        } elseif (str_contains($statusAnemia, 'sedang') || str_contains($statusAnemia, '7 - 9') || str_contains($statusAnemia, '7-9') || str_contains($statusAnemia, '7–9')) {
+            $scoreAnemia = 3;
+        } elseif (str_contains($statusAnemia, 'ringan') || str_contains($statusAnemia, '10 - 10') || str_contains($statusAnemia, '10-10') || str_contains($statusAnemia, '10–10')) {
+            $scoreAnemia = 2;
+        } elseif (str_contains($statusAnemia, 'normal') || str_contains($statusAnemia, 'tidak') || str_contains($statusAnemia, '11')) {
+            $scoreAnemia = 1;
         } else {
-            if (str_contains($statusAnemia, 'berat')) {
-                $scoreAnemia = 4;
-            } elseif (str_contains($statusAnemia, 'sedang')) {
-                $scoreAnemia = 3;
-            } elseif (str_contains($statusAnemia, 'ringan')) {
-                $scoreAnemia = 2;
-            } else {
-                $scoreAnemia = 1;
+            // Fallback hanya jika status anemia kosong tetapi kadar Hb ada
+            $hb = (float) $ibuHamil->kadar_hb;
+            if ($hb > 0) {
+                if ($hb >= 11.0) {
+                    $scoreAnemia = 1;
+                } elseif ($hb >= 10.0) {
+                    $scoreAnemia = 2;
+                } elseif ($hb >= 7.0) {
+                    $scoreAnemia = 3;
+                } else {
+                    $scoreAnemia = 4;
+                }
             }
         }
 

@@ -52,10 +52,10 @@
                     <label class="block text-xs font-semibold text-slate-600 mb-1.5">Status Anemia</label>
                     <select wire:model.live="filterAnemia" class="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-600/30">
                         <option value="">Semua Status Anemia</option>
-                        <option value="Tidak Anemia">Tidak Anemia (Normal)</option>
-                        <option value="Anemia Ringan">Anemia Ringan</option>
-                        <option value="Anemia Sedang">Anemia Sedang</option>
-                        <option value="Anemia Berat">Anemia Berat</option>
+                        <option value="normal">Normal (≥ 11)</option>
+                        <option value="ringan">Ringan (10 - 10,9)</option>
+                        <option value="sedang">Sedang (7 - 9,9)</option>
+                        <option value="berat">Berat (&lt; 7)</option>
                     </select>
                 </div>
 
@@ -100,7 +100,7 @@
 
         <!-- Table -->
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs">
+            <table class="w-full text-left border-collapse text-xs sm:text-sm">
                 <thead>
                     <tr class="bg-slate-50/80 text-slate-600 font-semibold border-b border-slate-200">
                         <th class="py-3.5 px-4">Nama Ibu Hamil</th>
@@ -118,20 +118,21 @@
                     @forelse($items as $row)
                         <tr class="hover:bg-slate-50/70 transition">
                             <td class="py-3.5 px-4 font-medium text-slate-900">
-                                <div>{{ $row->nama }}</div>
-                                <div class="text-[10px] text-slate-400">{{ $row->kode_ibu_hamil ?? '-' }} • {{ $row->desa_kelurahan ?? '-' }}</div>
+                                <div class="font-semibold text-slate-900">{{ $row->nama }}</div>
+                                <div class="text-xs text-slate-400">{{ $row->kode_ibu_hamil ?? '-' }} • {{ $row->desa_kelurahan ?? '-' }}</div>
                             </td>
                             <td class="py-3.5 px-3">
                                 @php
-                                    $badgeColor = match($row->status_anemia) {
-                                        'Anemia Berat' => 'bg-red-50 text-red-700 border-red-200',
-                                        'Anemia Sedang' => 'bg-amber-50 text-amber-700 border-amber-200',
-                                        'Anemia Ringan' => 'bg-yellow-50 text-yellow-700 border-yellow-200',
+                                    $statusText = $row->status_anemia_label;
+                                    $badgeColor = match(true) {
+                                        str_contains(strtolower($statusText), 'berat') => 'bg-red-50 text-red-700 border-red-200',
+                                        str_contains(strtolower($statusText), 'sedang') => 'bg-amber-50 text-amber-700 border-amber-200',
+                                        str_contains(strtolower($statusText), 'ringan') => 'bg-yellow-50 text-yellow-700 border-yellow-200',
                                         default => 'bg-emerald-50 text-emerald-700 border-emerald-200',
                                     };
                                 @endphp
-                                <span class="px-2.5 py-1 rounded-lg border text-[11px] font-semibold {{ $badgeColor }}">
-                                    {{ $row->status_anemia ?? 'Normal' }}
+                                <span class="px-2.5 py-1 rounded-lg border text-xs font-semibold {{ $badgeColor }}">
+                                    {{ $statusText }}
                                 </span>
                             </td>
                             <td class="py-3.5 px-3 font-semibold {{ $row->lila < 23 ? 'text-red-600' : 'text-slate-700' }}">
@@ -151,7 +152,7 @@
                             </td>
                             <td class="py-3.5 px-3">
                                 <span class="text-slate-700 font-medium">{{ $row->usia_kehamilan_minggu }} minggu</span>
-                                <div class="text-[10px] text-slate-400">{{ $row->status_kehamilan ?? '-' }}</div>
+                                <div class="text-xs text-slate-400">{{ $row->status_kehamilan ?? '-' }}</div>
                             </td>
                             <td class="py-3.5 px-4 text-center">
                                 <div class="inline-flex items-center gap-1.5">

@@ -56,7 +56,7 @@
 
                 <!-- Scales Table -->
                 <div class="p-0 overflow-x-auto flex-1">
-                    <table class="w-full text-left text-xs border-collapse">
+                    <table class="w-full text-left text-xs sm:text-sm border-collapse">
                         <thead>
                             <tr class="bg-slate-50/80 text-slate-500 font-semibold border-b border-slate-100">
                                 <th class="py-2.5 px-4">Parameter</th>
@@ -73,7 +73,7 @@
                                         {{ $scale->parameter }}
                                     </td>
                                     <td class="py-2.5 px-3 text-center">
-                                        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-700 font-bold text-[11px]">
+                                        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-700 font-bold text-xs">
                                              {{ $scale->score }}
                                         </span>
                                     </td>
@@ -89,7 +89,7 @@
                                                 default => 'bg-emerald-50 text-emerald-700 border-emerald-200',
                                             };
                                         @endphp
-                                        <span class="px-2 py-0.5 rounded-md border text-[10px] font-semibold {{ $catColor }}">
+                                        <span class="px-2 py-0.5 rounded-md border text-xs font-semibold {{ $catColor }}">
                                             {{ $scale->category }}
                                         </span>
                                     </td>
@@ -115,7 +115,7 @@
 
                 <!-- Footer Description -->
                 @if($criterion->description)
-                    <div class="px-4 py-2.5 bg-slate-50 border-t border-slate-100 text-[11px] text-slate-500">
+                    <div class="px-4 py-2.5 bg-slate-50 border-t border-slate-100 text-xs text-slate-500">
                         {{ $criterion->description }}
                     </div>
                 @endif

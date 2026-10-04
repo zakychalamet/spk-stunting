@@ -9,7 +9,6 @@ use App\Livewire\IbuHamil\Create as IbuHamilCreate;
 use App\Livewire\IbuHamil\Edit as IbuHamilEdit;
 use App\Livewire\IbuHamil\Index as IbuHamilIndex;
 use App\Livewire\IbuHamil\Show as IbuHamilShow;
-use App\Livewire\Ranking\Index as RankingIndex;
 use App\Livewire\Ranking\Show as RankingShow;
 use App\Livewire\Setting\Index as SettingIndex;
 use App\Livewire\Topsis\Calculation as TopsisCalculation;
@@ -61,8 +60,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/perhitungan-topsis', TopsisCalculation::class)->name('topsis.index');
     Route::get('/perhitungan-topsis/detail', TopsisDetail::class)->name('topsis.detail');
 
-    // Hasil Perangkingan
-    Route::get('/hasil-perangkingan', RankingIndex::class)->name('ranking.index');
+    // Hasil Perangkingan (Dialihkan ke Perhitungan TOPSIS)
+    Route::redirect('/hasil-perangkingan', '/perhitungan-topsis');
     Route::get('/hasil-perangkingan/{id}', RankingShow::class)->name('ranking.show');
 
     // Pengaturan

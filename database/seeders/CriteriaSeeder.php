@@ -22,10 +22,10 @@ class CriteriaSeeder extends Seeder
         );
 
         $k1Scales = [
-            ['parameter' => '≥ 11', 'score' => 1, 'label' => 'Normal', 'category' => 'Normal', 'min_value' => 11.0, 'max_value' => 99.0],
-            ['parameter' => '10 - 10.9', 'score' => 2, 'label' => 'Anemia Ringan', 'category' => 'Rendah', 'min_value' => 10.0, 'max_value' => 10.9],
-            ['parameter' => '7 - 9.9', 'score' => 3, 'label' => 'Anemia Sedang', 'category' => 'Sedang', 'min_value' => 7.0, 'max_value' => 9.9],
-            ['parameter' => '< 7', 'score' => 4, 'label' => 'Anemia Berat', 'category' => 'Tinggi', 'min_value' => 0.0, 'max_value' => 6.99],
+            ['parameter' => 'Normal (≥ 11)', 'score' => 1, 'label' => 'Normal', 'category' => 'Normal', 'min_value' => 11.0, 'max_value' => 99.0],
+            ['parameter' => 'Ringan (10 - 10,9)', 'score' => 2, 'label' => 'Anemia Ringan', 'category' => 'Rendah', 'min_value' => 10.0, 'max_value' => 10.9],
+            ['parameter' => 'Sedang (7 - 9,9)', 'score' => 3, 'label' => 'Anemia Sedang', 'category' => 'Sedang', 'min_value' => 7.0, 'max_value' => 9.9],
+            ['parameter' => 'Berat (< 7)', 'score' => 4, 'label' => 'Anemia Berat', 'category' => 'Tinggi', 'min_value' => 0.0, 'max_value' => 6.99],
         ];
 
         foreach ($k1Scales as $scale) {

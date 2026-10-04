@@ -18,15 +18,15 @@
             <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Informasi Pribadi</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="p-4 rounded-2xl border border-slate-100 bg-slate-50/50">
-                    <span class="text-[11px] text-slate-400 font-medium block mb-1">Nama Lengkap</span>
+                    <span class="text-xs text-slate-400 font-medium block mb-1">Nama Lengkap</span>
                     <span class="text-base font-bold text-slate-800">{{ $ibuHamil->nama }}</span>
                     @if($ibuHamil->kode_ibu_hamil)
-                        <span class="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md font-semibold ml-2">{{ $ibuHamil->kode_ibu_hamil }}</span>
+                        <span class="text-xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md font-semibold ml-2">{{ $ibuHamil->kode_ibu_hamil }}</span>
                     @endif
                 </div>
 
                 <div class="p-4 rounded-2xl border border-slate-100 bg-slate-50/50">
-                    <span class="text-[11px] text-slate-400 font-medium block mb-1">Tanggal Lahir (Usia)</span>
+                    <span class="text-xs text-slate-400 font-medium block mb-1">Tanggal Lahir (Usia)</span>
                     <div class="text-base font-bold text-slate-800">
                         {{ $ibuHamil->tanggal_lahir ? $ibuHamil->tanggal_lahir->format('d/m/Y') : '-' }}
                     </div>
@@ -34,12 +34,12 @@
                 </div>
 
                 <div class="p-4 rounded-2xl border border-slate-100 bg-slate-50/50">
-                    <span class="text-[11px] text-slate-400 font-medium block mb-1">Nomor Telepon</span>
+                    <span class="text-xs text-slate-400 font-medium block mb-1">Nomor Telepon</span>
                     <span class="text-sm font-semibold text-slate-800">{{ $ibuHamil->nomor_telepon ?: '-' }}</span>
                 </div>
 
                 <div class="p-4 rounded-2xl border border-slate-100 bg-slate-50/50">
-                    <span class="text-[11px] text-slate-400 font-medium block mb-1">Desa / Kelurahan</span>
+                    <span class="text-xs text-slate-400 font-medium block mb-1">Desa / Kelurahan</span>
                     <span class="text-sm font-semibold text-slate-800">{{ $ibuHamil->desa_kelurahan ?: '-' }}</span>
                 </div>
             </div>
@@ -50,22 +50,22 @@
             <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Informasi Kehamilan</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="p-4 rounded-2xl border border-slate-100 bg-slate-50/50">
-                    <span class="text-[11px] text-slate-400 font-medium block mb-1">Hari Pertama Haid Terakhir (HPHT)</span>
+                    <span class="text-xs text-slate-400 font-medium block mb-1">Hari Pertama Haid Terakhir (HPHT)</span>
                     <span class="text-base font-bold text-slate-800">{{ $ibuHamil->hpht ? $ibuHamil->hpht->format('d/m/Y') : '-' }}</span>
                 </div>
 
                 <div class="p-4 rounded-2xl border border-slate-100 bg-slate-50/50">
-                    <span class="text-[11px] text-slate-400 font-medium block mb-1">Hari Perkiraan Lahir (HPL)</span>
+                    <span class="text-xs text-slate-400 font-medium block mb-1">Hari Perkiraan Lahir (HPL)</span>
                     <span class="text-base font-bold text-slate-800">{{ $ibuHamil->hpl ? $ibuHamil->hpl->format('d/m/Y') : '-' }}</span>
                 </div>
 
                 <div class="p-4 rounded-2xl border border-slate-100 bg-slate-50/50">
-                    <span class="text-[11px] text-slate-400 font-medium block mb-1">Usia Kehamilan</span>
+                    <span class="text-xs text-slate-400 font-medium block mb-1">Usia Kehamilan</span>
                     <span class="text-base font-bold text-slate-800">{{ $ibuHamil->usia_kehamilan_label }}</span>
                 </div>
 
                 <div class="p-4 rounded-2xl border border-slate-100 bg-slate-50/50">
-                    <span class="text-[11px] text-slate-400 font-medium block mb-1">Status Kehamilan</span>
+                    <span class="text-xs text-slate-400 font-medium block mb-1">Status Kehamilan</span>
                     <span class="text-base font-bold text-slate-800">{{ $ibuHamil->status_kehamilan ?: '-' }}</span>
                 </div>
             </div>
@@ -76,7 +76,7 @@
             <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Informasi Kesehatan & Parameter Stunting</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="p-4 rounded-2xl border border-slate-100 bg-slate-50/50">
-                    <span class="text-[11px] text-slate-400 font-medium block mb-1">Status Anemia</span>
+                    <span class="text-xs text-slate-400 font-medium block mb-1">Status Anemia</span>
                     <div class="text-base font-bold text-slate-800">{{ $ibuHamil->status_anemia ?: 'Normal' }}</div>
                     @if($ibuHamil->kadar_hb)
                         <span class="text-xs text-slate-500 font-medium">{{ $ibuHamil->kadar_hb }} g/dL</span>
@@ -84,22 +84,22 @@
                 </div>
 
                 <div class="p-4 rounded-2xl border border-slate-100 bg-slate-50/50">
-                    <span class="text-[11px] text-slate-400 font-medium block mb-1">Indeks Massa Tubuh (IMT)</span>
+                    <span class="text-xs text-slate-400 font-medium block mb-1">Indeks Massa Tubuh (IMT)</span>
                     <span class="text-base font-bold text-slate-800">{{ number_format($ibuHamil->imt, 2) }}</span>
                 </div>
 
                 <div class="p-4 rounded-2xl border border-slate-100 bg-slate-50/50">
-                    <span class="text-[11px] text-slate-400 font-medium block mb-1">Lingkar Lengan Atas (LILA)</span>
+                    <span class="text-xs text-slate-400 font-medium block mb-1">Lingkar Lengan Atas (LILA)</span>
                     <span class="text-base font-bold text-slate-800 {{ $ibuHamil->lila < 23 ? 'text-red-600' : 'text-slate-800' }}">
                         {{ $ibuHamil->lila }} cm
                     </span>
                     @if($ibuHamil->lila < 23)
-                        <span class="text-[10px] text-red-600 font-semibold block mt-0.5">Indikasi KEK (&lt; 23 cm)</span>
+                        <span class="text-xs text-red-600 font-semibold block mt-0.5">Indikasi KEK (&lt; 23 cm)</span>
                     @endif
                 </div>
 
                 <div class="p-4 rounded-2xl border border-slate-100 bg-slate-50/50">
-                    <span class="text-[11px] text-slate-400 font-medium block mb-1">Berat Badan Sebelum Hamil</span>
+                    <span class="text-xs text-slate-400 font-medium block mb-1">Berat Badan Sebelum Hamil</span>
                     <span class="text-base font-bold text-slate-800">{{ $ibuHamil->berat_badan_sebelum_hamil ? $ibuHamil->berat_badan_sebelum_hamil . ' kg' : '-' }}</span>
                     @if($ibuHamil->tinggi_badan)
                         <span class="text-xs text-slate-400 block mt-0.5">Tinggi: {{ $ibuHamil->tinggi_badan }} cm</span>

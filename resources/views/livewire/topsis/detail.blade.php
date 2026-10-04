@@ -6,11 +6,9 @@
             <p class="text-xs text-slate-500 mt-0.5">Penjelasan transparan setiap tahapan matematis algoritma TOPSIS.</p>
         </div>
         <div class="flex items-center gap-3">
-            <a href="{{ route('topsis.index') }}" class="px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 text-xs font-semibold transition">
-                Kembali ke Ringkasan
-            </a>
-            <a href="{{ route('ranking.index') }}" class="px-5 py-2 rounded-xl bg-[#085a3c] hover:bg-[#064830] text-white text-xs font-semibold shadow-xs transition">
-                Lihat Hasil Perangkingan &rarr;
+            <a href="{{ route('topsis.index') }}" class="px-5 py-2.5 rounded-xl bg-[#085a3c] hover:bg-[#064830] text-white text-xs font-semibold shadow-xs transition flex items-center gap-2">
+                <span>&larr;</span>
+                <span>Kembali ke Perhitungan TOPSIS</span>
             </a>
         </div>
     </div>
@@ -30,11 +28,11 @@
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-center text-xs border-collapse">
+                <table class="w-full text-center text-xs sm:text-sm border-collapse">
                     <thead>
                         <tr class="bg-slate-50 text-slate-600 font-bold border-b border-slate-200">
                             <th class="py-3 px-4 text-left">ALTERNATIF</th>
-                            <th class="py-3 px-3">Anemia (K1)</th>
+                            <th class="py-3 px-3">Status Anemia (K1)</th>
                             <th class="py-3 px-3">IMT (K2)</th>
                             <th class="py-3 px-3">LILA (K3)</th>
                             <th class="py-3 px-3">Usia (K4)</th>
@@ -65,11 +63,11 @@
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-center text-xs border-collapse font-mono">
+                <table class="w-full text-center text-xs sm:text-sm border-collapse font-mono">
                     <thead>
                         <tr class="bg-slate-50 text-slate-600 font-bold border-b border-slate-200 font-sans">
                             <th class="py-3 px-4 text-left">ALTERNATIF</th>
-                            <th class="py-3 px-3">Anemia</th>
+                            <th class="py-3 px-3">Status Anemia</th>
                             <th class="py-3 px-3">IMT</th>
                             <th class="py-3 px-3">LILA</th>
                             <th class="py-3 px-3">Usia</th>
@@ -117,11 +115,11 @@
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-center text-xs border-collapse font-mono">
+                <table class="w-full text-center text-xs sm:text-sm border-collapse font-mono">
                     <thead>
                         <tr class="bg-slate-50 text-slate-600 font-bold border-b border-slate-200 font-sans">
                             <th class="py-3 px-4 text-left">ALTERNATIF</th>
-                            <th class="py-3 px-3">Anemia (w={{ $topsisData['weights']['K1'] }})</th>
+                            <th class="py-3 px-3">Status Anemia (w={{ $topsisData['weights']['K1'] }})</th>
                             <th class="py-3 px-3">IMT (w={{ $topsisData['weights']['K2'] }})</th>
                             <th class="py-3 px-3">LILA (w={{ $topsisData['weights']['K3'] }})</th>
                             <th class="py-3 px-3">Usia (w={{ $topsisData['weights']['K4'] }})</th>
@@ -152,11 +150,11 @@
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-center text-xs border-collapse font-mono">
+                <table class="w-full text-center text-xs sm:text-sm border-collapse font-mono">
                     <thead>
                         <tr class="bg-slate-50 text-slate-600 font-bold border-b border-slate-200 font-sans">
                             <th class="py-3 px-4 text-left">SOLUSI IDEAL</th>
-                            <th class="py-3 px-3">Anemia</th>
+                            <th class="py-3 px-3">Status Anemia</th>
                             <th class="py-3 px-3">IMT</th>
                             <th class="py-3 px-3">LILA</th>
                             <th class="py-3 px-3">Usia</th>
@@ -194,7 +192,7 @@
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-center text-xs border-collapse font-mono">
+                <table class="w-full text-center text-xs sm:text-sm border-collapse font-mono">
                     <thead>
                         <tr class="bg-slate-50 text-slate-600 font-bold border-b border-slate-200 font-sans">
                             <th class="py-3 px-4 text-left">ALTERNATIF</th>
@@ -225,7 +223,7 @@
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-center text-xs border-collapse">
+                <table class="w-full text-center text-xs sm:text-sm border-collapse">
                     <thead>
                         <tr class="bg-slate-50 text-slate-600 font-bold border-b border-slate-200">
                             <th class="py-3 px-3">Peringkat</th>
@@ -254,7 +252,7 @@
                                             default => 'bg-emerald-50 text-emerald-700 border-emerald-200',
                                         };
                                     @endphp
-                                    <span class="px-2.5 py-1 rounded-lg border text-[11px] font-bold {{ $badgeColor }}">
+                                    <span class="px-2.5 py-1 rounded-lg border text-xs font-bold {{ $badgeColor }}">
                                         {{ $row['priority'] }}
                                     </span>
                                 </td>

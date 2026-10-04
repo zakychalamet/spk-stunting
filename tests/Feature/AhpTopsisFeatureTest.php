@@ -58,11 +58,10 @@ class AhpTopsisFeatureTest extends TestCase
         $response->assertSee('Detail Perhitungan TOPSIS');
     }
 
-    public function test_ranking_page_is_accessible(): void
+    public function test_ranking_page_redirects_to_topsis(): void
     {
         $response = $this->actingAs($this->user)->get('/hasil-perangkingan');
-        $response->assertStatus(200);
-        $response->assertSee('Hasil Perangkingan Prioritas');
+        $response->assertRedirect('/perhitungan-topsis');
     }
 
     public function test_ranking_show_page_is_accessible(): void

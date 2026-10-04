@@ -22,7 +22,7 @@
         </div>
 
         <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs border-collapse">
+            <table class="w-full text-left text-xs sm:text-sm border-collapse">
                 <thead>
                     <tr class="bg-slate-50 text-slate-600 font-semibold border-b border-slate-100">
                         <th class="py-3.5 px-4">Pengguna</th>
@@ -41,8 +41,8 @@
                                         {{ substr($u->name, 0, 1) }}
                                     </div>
                                     <div>
-                                        <div>{{ $u->name }}</div>
-                                        <div class="text-[10px] text-slate-400 font-normal">@<span>{{ $u->username }}</span></div>
+                                        <div class="font-bold text-slate-900">{{ $u->name }}</div>
+                                        <div class="text-xs text-slate-400 font-normal">@<span>{{ $u->username }}</span></div>
                                     </div>
                                 </div>
                             </td>
@@ -55,11 +55,11 @@
                                         default => 'bg-slate-50 text-slate-700 border-slate-200',
                                     };
                                 @endphp
-                                <span class="px-3 py-1 rounded-full border text-[11px] font-semibold {{ $roleBadge }}">
+                                <span class="px-3 py-1 rounded-full border text-xs font-semibold {{ $roleBadge }}">
                                     {{ $u->role_label }}
                                 </span>
                             </td>
-                            <td class="py-3.5 px-4 text-slate-600 font-mono text-xs">
+                            <td class="py-3.5 px-4 text-slate-600 font-mono text-xs sm:text-sm">
                                 {{ $u->email }}
                             </td>
                             <td class="py-3.5 px-4 text-slate-500">

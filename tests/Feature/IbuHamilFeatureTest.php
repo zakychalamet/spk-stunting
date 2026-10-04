@@ -69,4 +69,30 @@ class IbuHamilFeatureTest extends TestCase
         $response->assertStatus(200);
         $this->assertTrue(str_contains($response->headers->get('content-type'), 'text/csv'));
     }
+
+    public function test_ibu_hamil_can_be_created_via_livewire(): void
+    {
+        \Livewire\Livewire::actingAs($this->user)
+            ->test(\App\Livewire\IbuHamil\Create::class)
+            ->set('nama', 'Ibu Test Baru')
+            ->set('tanggal_lahir', '1996-05-15')
+            ->set('hpht', '2025-01-01')
+            ->set('hpl', '2025-10-08')
+            ->set('usia_kehamilan_minggu', 10)
+            ->set('status_kehamilan', 'Trimester I')
+            ->set('status_anemia', 'Sedang (7 - 9,9)')
+            ->set('imt', 23.5)
+            ->set('lila', 24.5)
+            ->set('berat_badan_sebelum_hamil', 52.0)
+            ->call('save')
+            ->assertRedirect(route('ibu-hamil.index'));
+
+        $this->assertDatabaseHas('ibu_hamil', [
+            'nama' => 'Ibu Test Baru',
+            'status_anemia' => 'Sedang (7 - 9,9)',
+            'imt' => 23.5,
+            'lila' => 24.5,
+            'berat_badan_sebelum_hamil' => 52.0,
+        ]);
+    }
 }

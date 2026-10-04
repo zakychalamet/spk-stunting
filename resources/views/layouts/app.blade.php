@@ -76,20 +76,11 @@
 
                 <!-- Perhitungan TOPSIS -->
                 <a href="{{ route('topsis.index') }}" 
-                   class="flex items-center gap-3.5 px-4 py-3 rounded-xl transition-all duration-150 {{ request()->routeIs('topsis.*') ? 'bg-white text-[#085a3c] font-semibold shadow-sm' : 'text-emerald-100 hover:bg-emerald-800/50 hover:text-white' }}">
+                   class="flex items-center gap-3.5 px-4 py-3 rounded-xl transition-all duration-150 {{ request()->routeIs('topsis.*') || request()->routeIs('ranking.show') ? 'bg-white text-[#085a3c] font-semibold shadow-sm' : 'text-emerald-100 hover:bg-emerald-800/50 hover:text-white' }}">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
                     </svg>
                     <span>Perhitungan TOPSIS</span>
-                </a>
-
-                <!-- Hasil Perangkingan -->
-                <a href="{{ route('ranking.index') }}" 
-                   class="flex items-center gap-3.5 px-4 py-3 rounded-xl transition-all duration-150 {{ request()->routeIs('ranking.*') ? 'bg-white text-[#085a3c] font-semibold shadow-sm' : 'text-emerald-100 hover:bg-emerald-800/50 hover:text-white' }}">
-                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
-                    </svg>
-                    <span>Hasil Perangkingan</span>
                 </a>
 
                 <!-- Pengguna -->
@@ -153,14 +144,14 @@
             <!-- User profile header pill -->
             <div class="flex items-center gap-3">
                 <div class="flex items-center gap-2.5 pl-3 pr-4 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-full transition cursor-pointer">
-                    <div class="w-8 h-8 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-xs uppercase shadow-sm">
+                    <div class="w-9 h-9 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-sm uppercase shadow-sm">
                         {{ substr(auth()->user()->name ?? 'B', 0, 1) }}
                     </div>
                     <div class="text-left">
-                        <div class="text-xs font-bold text-slate-800 leading-tight">
+                        <div class="text-sm font-bold text-slate-800 leading-tight">
                             {{ auth()->user()->name ?? 'Bidan Kesehatan' }}
                         </div>
-                        <div class="text-[10px] text-emerald-700 font-semibold uppercase tracking-wider">
+                        <div class="text-xs text-emerald-700 font-bold uppercase tracking-wider">
                             {{ auth()->user()->role_label ?? 'Bidan' }}
                         </div>
                     </div>

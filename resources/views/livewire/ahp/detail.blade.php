@@ -30,7 +30,7 @@
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-center text-xs border-collapse">
+                <table class="w-full text-center text-xs sm:text-sm border-collapse">
                     <thead>
                         <tr class="bg-slate-50 text-slate-600 font-bold border-b border-slate-200">
                             <th class="py-3 px-4 text-left">KRITERIA</th>
@@ -107,7 +107,7 @@
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-center text-xs border-collapse">
+                <table class="w-full text-center text-xs sm:text-sm border-collapse">
                     <thead>
                         <tr class="bg-slate-50 text-slate-600 font-bold border-b border-slate-200">
                             <th class="py-3 px-4 text-left">KRITERIA</th>
@@ -182,7 +182,7 @@
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs">
+                <table class="w-full text-left text-xs sm:text-sm">
                     <thead>
                         <tr class="bg-slate-50 text-slate-600 font-bold border-b border-slate-200">
                             <th class="py-3 px-4">Kriteria</th>
@@ -199,7 +199,7 @@
                             @endphp
                             <tr class="hover:bg-slate-50/50 transition">
                                 <td class="py-3 px-4 font-bold text-slate-800">
-                                    <span class="px-2 py-0.5 rounded bg-slate-100 text-[11px] font-mono mr-1.5">{{ $c->code }}</span>
+                                    <span class="px-2 py-0.5 rounded bg-slate-100 text-xs font-mono mr-1.5">{{ $c->code }}</span>
                                     {{ $c->name }}
                                 </td>
                                 <td class="py-3 px-4 font-mono font-bold text-slate-900">
@@ -237,13 +237,13 @@
                 <div class="p-5 rounded-2xl border border-slate-100 bg-slate-50/60 space-y-1 text-center">
                     <span class="text-xs text-slate-400 font-semibold block uppercase tracking-wider">Consistency Index (CI)</span>
                     <span class="text-3xl font-extrabold text-slate-800 font-mono">{{ number_format($detailData['ci'] ?? 0, 4) }}</span>
-                    <span class="text-[10px] text-slate-400 block mt-0.5">(\lambda max - n) / (n - 1)</span>
+                    <span class="text-xs text-slate-400 block mt-0.5">(\lambda max - n) / (n - 1)</span>
                 </div>
 
                 <div class="p-5 rounded-2xl border {{ ($detailData['isConsistent'] ?? true) ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-red-50 border-red-200 text-red-800' }} space-y-1 text-center">
                     <span class="text-xs font-semibold block uppercase tracking-wider">Consistency Ratio (CR)</span>
                     <span class="text-3xl font-extrabold font-mono">{{ number_format($detailData['cr'] ?? 0, 4) }}</span>
-                    <span class="text-[10px] block mt-0.5">CR = CI / RI (RI = {{ $detailData['ri'] ?? 0.90 }})</span>
+                    <span class="text-xs block mt-0.5">CR = CI / RI (RI = {{ $detailData['ri'] ?? 0.90 }})</span>
                 </div>
             </div>
 

@@ -124,7 +124,16 @@ class Index extends Component
         }
 
         if (!empty($this->filterAnemia)) {
-            $query->where('status_anemia', $this->filterAnemia);
+            $filter = strtolower($this->filterAnemia);
+            if ($filter === 'normal') {
+                $query->where(function($q) {
+                    $q->where('status_anemia', 'like', '%normal%')
+                      ->orWhere('status_anemia', 'like', '%tidak%')
+                      ->orWhere('status_anemia', 'like', '%11%');
+                });
+            } else {
+                $query->where('status_anemia', 'like', '%' . $this->filterAnemia . '%');
+            }
         }
 
         if (!empty($this->filterDesa)) {

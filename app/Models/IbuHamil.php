@@ -76,4 +76,32 @@ class IbuHamil extends Model
     {
         return ($this->usia_kehamilan_minggu ?? 0) . ' minggu';
     }
+
+    public function getStatusAnemiaLabelAttribute(): string
+    {
+        $status = strtolower(trim((string) $this->status_anemia));
+        if (str_contains($status, 'berat') || str_contains($status, '< 7') || str_contains($status, '<7')) {
+            return 'Berat (< 7)';
+        }
+        if (str_contains($status, 'sedang') || str_contains($status, '7 - 9') || str_contains($status, '7-9') || str_contains($status, '7–9')) {
+            return 'Sedang (7 - 9,9)';
+        }
+        if (str_contains($status, 'ringan') || str_contains($status, '10 - 10') || str_contains($status, '10-10') || str_contains($status, '10–10')) {
+            return 'Ringan (10 - 10,9)';
+        }
+        if (str_contains($status, 'normal') || str_contains($status, 'tidak') || str_contains($status, '11')) {
+            return 'Normal (≥ 11)';
+        }
+
+        // Fallback to kadar_hb if status_anemia is empty
+        $hb = (float) $this->kadar_hb;
+        if ($hb > 0) {
+            if ($hb >= 11.0) return 'Normal (≥ 11)';
+            if ($hb >= 10.0) return 'Ringan (10 - 10,9)';
+            if ($hb >= 7.0) return 'Sedang (7 - 9,9)';
+            return 'Berat (< 7)';
+        }
+
+        return $this->status_anemia ?: 'Normal (≥ 11)';
+    }
 }

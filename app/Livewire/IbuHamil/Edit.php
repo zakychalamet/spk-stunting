@@ -24,13 +24,11 @@ class Edit extends Component
     public int $usia_kehamilan_minggu = 0;
     public string $status_kehamilan = 'Trimester I';
 
-    // Informasi Kesehatan
+    // Informasi Kesehatan (Hanya 4 field: Status Anemia, IMT, LILA, Berat Badan Sebelum Hamil)
     public string $status_anemia = 'Tidak Anemia';
-    public ?float $kadar_hb = null;
-    public float $imt = 0;
-    public float $lila = 0;
+    public ?float $imt = null;
+    public ?float $lila = null;
     public ?float $berat_badan_sebelum_hamil = null;
-    public ?float $tinggi_badan = null;
 
     protected $rules = [
         'nama' => 'required|string|max:255',
@@ -45,8 +43,6 @@ class Edit extends Component
         'nomor_telepon' => 'nullable|string|max:30',
         'desa_kelurahan' => 'nullable|string|max:100',
         'berat_badan_sebelum_hamil' => 'nullable|numeric|min:0',
-        'tinggi_badan' => 'nullable|numeric|min:0',
-        'kadar_hb' => 'nullable|numeric|min:0',
     ];
 
     protected $messages = [
@@ -55,6 +51,7 @@ class Edit extends Component
         'tanggal_lahir.date' => 'Format tanggal lahir tidak valid.',
         'hpht.required' => 'Hari Pertama Haid Terakhir (HPHT) wajib diisi.',
         'hpl.required' => 'Hari Perkiraan Lahir (HPL) wajib diisi.',
+        'status_anemia.required' => 'Status anemia wajib dipilih.',
         'imt.required' => 'Indeks Massa Tubuh (IMT) wajib diisi.',
         'lila.required' => 'Lingkar Lengan Atas (LILA) wajib diisi.',
     ];
@@ -73,12 +70,10 @@ class Edit extends Component
         $this->usia_kehamilan_minggu = (int) $ibuHamil->usia_kehamilan_minggu;
         $this->status_kehamilan = $ibuHamil->status_kehamilan ?? 'Trimester I';
 
-        $this->status_anemia = $ibuHamil->status_anemia ?? 'Tidak Anemia';
-        $this->kadar_hb = $ibuHamil->kadar_hb;
+        $this->status_anemia = $ibuHamil->status_anemia_label;
         $this->imt = (float) $ibuHamil->imt;
         $this->lila = (float) $ibuHamil->lila;
         $this->berat_badan_sebelum_hamil = $ibuHamil->berat_badan_sebelum_hamil;
-        $this->tinggi_badan = $ibuHamil->tinggi_badan;
     }
 
     public function updatedTanggalLahir($value)
@@ -113,40 +108,6 @@ class Edit extends Component
         }
     }
 
-    public function updatedBeratBadanSebelumHamil()
-    {
-        $this->recalculateImt();
-    }
-
-    public function updatedTinggiBadan()
-    {
-        $this->recalculateImt();
-    }
-
-    protected function recalculateImt()
-    {
-        if ($this->berat_badan_sebelum_hamil && $this->tinggi_badan && $this->tinggi_badan > 0) {
-            $tbMeter = $this->tinggi_badan / 100;
-            $this->imt = round($this->berat_badan_sebelum_hamil / ($tbMeter * $tbMeter), 2);
-        }
-    }
-
-    public function updatedKadarHb($value)
-    {
-        if ($value !== null && $value !== '') {
-            $hb = (float) $value;
-            if ($hb >= 11.0) {
-                $this->status_anemia = 'Tidak Anemia';
-            } elseif ($hb >= 10.0) {
-                $this->status_anemia = 'Anemia Ringan';
-            } elseif ($hb >= 7.0) {
-                $this->status_anemia = 'Anemia Sedang';
-            } else {
-                $this->status_anemia = 'Anemia Berat';
-            }
-        }
-    }
-
     public function save()
     {
         $this->validate();
@@ -161,14 +122,12 @@ class Edit extends Component
             'usia_kehamilan_minggu' => $this->usia_kehamilan_minggu,
             'status_kehamilan' => $this->status_kehamilan,
             'status_anemia' => $this->status_anemia,
-            'kadar_hb' => $this->kadar_hb,
             'imt' => $this->imt,
             'lila' => $this->lila,
             'berat_badan_sebelum_hamil' => $this->berat_badan_sebelum_hamil,
-            'tinggi_badan' => $this->tinggi_badan,
         ]);
 
-        session()->flash('success', 'Perubahan data ibu hamil berhasil disimpan.');
+        session()->flash('success', "Data ibu hamil {$this->ibuHamil->nama} berhasil diperbarui.");
         return redirect()->route('ibu-hamil.index');
     }
 
@@ -181,8 +140,8 @@ class Edit extends Component
         return view('livewire.ibu-hamil.edit', [
             'desaList' => $desaList,
         ])->layout('layouts.app', [
-            'title' => 'Edit Data Ibu Hamil',
-            'breadcrumb' => 'Edit Data Ibu Hamil',
+            'title' => 'Edit Ibu Hamil',
+            'breadcrumb' => 'Edit Ibu Hamil',
         ]);
     }
 }

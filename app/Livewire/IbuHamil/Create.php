@@ -22,13 +22,11 @@ class Create extends Component
     public int $usia_kehamilan_minggu = 0;
     public string $status_kehamilan = 'Trimester I';
 
-    // Informasi Kesehatan
-    public string $status_anemia = 'Tidak Anemia';
-    public ?float $kadar_hb = null;
-    public float $imt = 0;
-    public float $lila = 0;
+    // Informasi Kesehatan (Hanya 4 field: Status Anemia, IMT, LILA, Berat Badan Sebelum Hamil)
+    public string $status_anemia = 'Normal (≥ 11)';
+    public ?float $imt = null;
+    public ?float $lila = null;
     public ?float $berat_badan_sebelum_hamil = null;
-    public ?float $tinggi_badan = null;
 
     protected $rules = [
         'nama' => 'required|string|max:255',
@@ -43,8 +41,6 @@ class Create extends Component
         'nomor_telepon' => 'nullable|string|max:30',
         'desa_kelurahan' => 'nullable|string|max:100',
         'berat_badan_sebelum_hamil' => 'nullable|numeric|min:0',
-        'tinggi_badan' => 'nullable|numeric|min:0',
-        'kadar_hb' => 'nullable|numeric|min:0',
     ];
 
     protected $messages = [
@@ -53,6 +49,7 @@ class Create extends Component
         'tanggal_lahir.date' => 'Format tanggal lahir tidak valid.',
         'hpht.required' => 'Hari Pertama Haid Terakhir (HPHT) wajib diisi.',
         'hpl.required' => 'Hari Perkiraan Lahir (HPL) wajib diisi.',
+        'status_anemia.required' => 'Status anemia wajib dipilih.',
         'imt.required' => 'Indeks Massa Tubuh (IMT) wajib diisi.',
         'lila.required' => 'Lingkar Lengan Atas (LILA) wajib diisi.',
     ];
@@ -73,14 +70,10 @@ class Create extends Component
         if (!empty($value)) {
             try {
                 $carbonHpht = Carbon::parse($value);
-                // HPL formula (Negele: +280 days)
                 $this->hpl = $carbonHpht->copy()->addDays(280)->format('Y-m-d');
-
-                // Usia kehamilan in weeks
                 $weeks = (int) $carbonHpht->diffInWeeks(Carbon::now());
                 $this->usia_kehamilan_minggu = max(0, min(42, $weeks));
 
-                // Status kehamilan / trimester
                 if ($this->usia_kehamilan_minggu <= 12) {
                     $this->status_kehamilan = 'Trimester I';
                 } elseif ($this->usia_kehamilan_minggu <= 27) {
@@ -89,41 +82,6 @@ class Create extends Component
                     $this->status_kehamilan = 'Trimester III';
                 }
             } catch (\Exception $e) {
-                // Ignore parsing errors
-            }
-        }
-    }
-
-    public function updatedBeratBadanSebelumHamil()
-    {
-        $this->recalculateImt();
-    }
-
-    public function updatedTinggiBadan()
-    {
-        $this->recalculateImt();
-    }
-
-    protected function recalculateImt()
-    {
-        if ($this->berat_badan_sebelum_hamil && $this->tinggi_badan && $this->tinggi_badan > 0) {
-            $tbMeter = $this->tinggi_badan / 100;
-            $this->imt = round($this->berat_badan_sebelum_hamil / ($tbMeter * $tbMeter), 2);
-        }
-    }
-
-    public function updatedKadarHb($value)
-    {
-        if ($value !== null && $value !== '') {
-            $hb = (float) $value;
-            if ($hb >= 11.0) {
-                $this->status_anemia = 'Tidak Anemia';
-            } elseif ($hb >= 10.0) {
-                $this->status_anemia = 'Anemia Ringan';
-            } elseif ($hb >= 7.0) {
-                $this->status_anemia = 'Anemia Sedang';
-            } else {
-                $this->status_anemia = 'Anemia Berat';
             }
         }
     }
@@ -142,11 +100,9 @@ class Create extends Component
             'usia_kehamilan_minggu' => $this->usia_kehamilan_minggu,
             'status_kehamilan' => $this->status_kehamilan,
             'status_anemia' => $this->status_anemia,
-            'kadar_hb' => $this->kadar_hb,
             'imt' => $this->imt,
             'lila' => $this->lila,
             'berat_badan_sebelum_hamil' => $this->berat_badan_sebelum_hamil,
-            'tinggi_badan' => $this->tinggi_badan,
         ]);
 
         session()->flash('success', 'Data ibu hamil berhasil ditambahkan.');
