@@ -51,8 +51,18 @@ class IbuHamil extends Model
         static::creating(function ($ibuHamil) {
             if (empty($ibuHamil->kode_ibu_hamil)) {
                 $year = date('Y');
-                $count = static::whereYear('created_at', $year)->count() + 1;
-                $ibuHamil->kode_ibu_hamil = sprintf('P-%s-%03d', $year, $count);
+                $records = static::where('kode_ibu_hamil', 'LIKE', "P-{$year}-%")->pluck('kode_ibu_hamil');
+                $maxSeq = 0;
+                foreach ($records as $code) {
+                    if (preg_match('/^P-\d{4}-(\d+)$/', $code, $matches)) {
+                        $num = (int) $matches[1];
+                        if ($num > $maxSeq) {
+                            $maxSeq = $num;
+                        }
+                    }
+                }
+                $nextSeq = $maxSeq + 1;
+                $ibuHamil->kode_ibu_hamil = sprintf('P-%s-%02d', $year, $nextSeq);
             }
         });
     }
@@ -80,11 +90,11 @@ class IbuHamil extends Model
     public function getStatusAnemiaLabelAttribute(): string
     {
         $status = strtolower(trim((string) $this->status_anemia));
-        if (str_contains($status, 'berat') || str_contains($status, '< 7') || str_contains($status, '<7')) {
-            return 'Berat (< 7)';
+        if (str_contains($status, 'berat') || str_contains($status, '< 8') || str_contains($status, '<8') || str_contains($status, '< 7')) {
+            return 'Berat (< 8)';
         }
-        if (str_contains($status, 'sedang') || str_contains($status, '7 - 9') || str_contains($status, '7-9') || str_contains($status, '7–9')) {
-            return 'Sedang (7 - 9,9)';
+        if (str_contains($status, 'sedang') || str_contains($status, '8 - 9') || str_contains($status, '8-9') || str_contains($status, '8–9') || str_contains($status, '7 - 9')) {
+            return 'Sedang (8 - 9,9)';
         }
         if (str_contains($status, 'ringan') || str_contains($status, '10 - 10') || str_contains($status, '10-10') || str_contains($status, '10–10')) {
             return 'Ringan (10 - 10,9)';
@@ -98,8 +108,8 @@ class IbuHamil extends Model
         if ($hb > 0) {
             if ($hb >= 11.0) return 'Normal (≥ 11)';
             if ($hb >= 10.0) return 'Ringan (10 - 10,9)';
-            if ($hb >= 7.0) return 'Sedang (7 - 9,9)';
-            return 'Berat (< 7)';
+            if ($hb >= 8.0) return 'Sedang (8 - 9,9)';
+            return 'Berat (< 8)';
         }
 
         return $this->status_anemia ?: 'Normal (≥ 11)';

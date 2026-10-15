@@ -18,17 +18,15 @@
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex">
+<body class="bg-slate-50 text-slate-800 antialiased h-screen flex overflow-hidden">
 
-    <!-- SIDEBAR -->
-    <aside class="w-64 bg-[#085a3c] text-white flex flex-col justify-between shrink-0 min-h-screen shadow-xl select-none z-30">
+    <!-- SIDEBAR (Static/Fixed - Tidak Ikut Ter-scroll) -->
+    <aside class="w-64 bg-[#085a3c] text-white flex flex-col justify-between shrink-0 h-screen sticky top-0 shadow-xl select-none z-30 overflow-y-auto">
         <div>
             <!-- Header / Logo -->
             <div class="px-6 py-6 border-b border-emerald-800/60 flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-emerald-600/30 border border-emerald-400/40 flex items-center justify-center text-emerald-300 shadow-inner">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                    </svg>
+                <div class="w-10 h-10 rounded-xl bg-white/10 border border-emerald-400/30 flex items-center justify-center p-1.5 shadow-inner">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo SPK Stunting" class="w-full h-full object-contain">
                 </div>
                 <div>
                     <h1 class="font-bold text-lg leading-tight tracking-wide text-white">SPK Stunting</h1>
@@ -206,7 +204,7 @@
                 <p><strong>2. Kriteria & Skala:</strong> Terdapat 4 kriteria utama (Anemia, IMT, LILA, Usia). Parameter skala medis menentukan skor risiko (1-4).</p>
                 <p><strong>3. Perhitungan Bobot (AHP):</strong> Lakukan perbandingan berpasangan tingkat kepentingan kriteria berdasarkan Skala Saaty (1-9). Sistem akan menguji rasio konsistensi (CR &le; 0.10).</p>
                 <p><strong>4. Perhitungan TOPSIS:</strong> Menghitung matriks keputusan terbobot, solusi ideal positif/negatif, dan jarak Euclidean untuk setiap pasien.</p>
-                <p><strong>5. Hasil Perangkingan:</strong> Menghasilkan skor preferensi ($V_i$) dari 0 hingga 1. Semakin tinggi skor, semakin tinggi prioritas penanganan ibu hamil berisiko stunting.</p>
+                <p><strong>5. Hasil Perangkingan:</strong> Menghasilkan skor preferensi (V) dari 0 hingga 1. Semakin tinggi skor, semakin tinggi prioritas penanganan ibu hamil berisiko stunting.</p>
             </div>
             <div class="text-right pt-2 border-t">
                 <button type="button" onclick="document.getElementById('panduanModal').classList.add('hidden')" class="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-sm font-semibold transition">Mengerti</button>

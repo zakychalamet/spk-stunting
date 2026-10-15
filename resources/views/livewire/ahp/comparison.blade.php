@@ -1,4 +1,53 @@
-<div class="space-y-8">
+<div class="space-y-8 relative">
+    <!-- Centered Modal Alert Notification (Muncul di Tengah Konten Utama, Bukan Dari Sidebar) -->
+    @if($notification)
+        <div class="fixed inset-0 left-0 md:left-64 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+            <div class="animate-modal-pop bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border {{ $notification['type'] === 'success' ? 'border-emerald-100 shadow-emerald-950/15' : 'border-red-100 shadow-red-950/15' }} space-y-5 text-center relative">
+                <!-- Close (X) button in top-right corner -->
+                <button type="button" 
+                        wire:click="dismissNotification" 
+                        class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition"
+                        title="Tutup">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+
+                <!-- Icon in Center -->
+                <div class="mx-auto w-16 h-16 rounded-2xl {{ $notification['type'] === 'success' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-red-50 text-red-600 border border-red-100' }} flex items-center justify-center shadow-inner">
+                    @if($notification['type'] === 'success')
+                        <svg class="w-9 h-9 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    @else
+                        <svg class="w-9 h-9 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                    @endif
+                </div>
+
+                <!-- Text Content -->
+                <div class="space-y-2">
+                    <h3 class="text-lg font-bold {{ $notification['type'] === 'success' ? 'text-slate-900' : 'text-red-900' }}">
+                        {{ $notification['title'] }}
+                    </h3>
+                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed px-2">
+                        {{ $notification['message'] }}
+                    </p>
+                </div>
+
+                <!-- Action Button at Bottom -->
+                <div class="pt-2">
+                    <button type="button" 
+                            wire:click="dismissNotification" 
+                            class="w-full py-2.5 px-4 rounded-xl {{ $notification['type'] === 'success' ? 'bg-[#085a3c] hover:bg-[#064830]' : 'bg-red-600 hover:bg-red-700' }} text-white text-xs font-bold shadow-md transition">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <!-- Header Title -->
     <div>
         <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Perhitungan Analytical Hierarchy Process (AHP)</h2>
@@ -114,10 +163,21 @@
         <!-- Calculate Action -->
         <div class="flex justify-center pt-3">
             <button type="button" 
-                    wire:click="calculate" 
-                    class="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-[#085a3c] hover:bg-[#064830] text-white text-xs font-bold shadow-md transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                <span>Hitung AHP</span>
+                    wire:click="calculate"
+                    wire:loading.attr="disabled"
+                    wire:target="calculate"
+                    class="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-[#085a3c] hover:bg-[#064830] disabled:opacity-60 disabled:cursor-not-allowed text-white text-xs font-bold shadow-md transition">
+                <span wire:loading.remove wire:target="calculate" class="inline-flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                    <span>Hitung AHP</span>
+                </span>
+                <span wire:loading.inline-flex wire:target="calculate" class="items-center gap-2">
+                    <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                    </svg>
+                    <span>Sedang Menghitung AHP...</span>
+                </span>
             </button>
         </div>
     </div>
@@ -200,37 +260,39 @@
                 </div>
             </div>
 
-            <!-- Right 1 Col: Consistency Card -->
-            <div class="rounded-2xl p-6 shadow-sm flex flex-col justify-between {{ $isCons ? 'bg-[#085a3c] text-white' : 'bg-red-700 text-white' }}">
-                <div class="space-y-3">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-white/80 uppercase tracking-wider">Consistency Ratio (CR)</span>
-                        <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                            @if($isCons)
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                            @else
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                            @endif
-                        </div>
-                    </div>
-
-                    <div class="text-4xl font-extrabold tracking-tight">
-                        {{ number_format($crVal, 3) }}
-                    </div>
-
-                    <div class="space-y-1 text-xs text-white/90">
-                        <div class="font-bold">
-                            {{ $isCons ? 'Nilai CR ≤ 0.10' : 'Nilai CR > 0.10' }}
-                        </div>
-                        <p class="text-[11px] leading-relaxed text-white/80">
-                            {{ $isCons ? 'Perbandingan kriteria dinyatakan konsisten dan bobot dapat digunakan.' : 'Perbandingan kriteria tidak konsisten dan perlu diperiksa kembali.' }}
-                        </p>
-                    </div>
+            <!-- Right 1 Col: Consistency Card matching Gambar 1 & Gambar 2 -->
+            <div class="rounded-3xl p-6 sm:p-8 shadow-sm flex flex-col items-center justify-center text-center space-y-4 {{ $isCons ? 'bg-[#04683d]' : 'bg-[#b31d1d]' }}">
+                <!-- Icon Circle Badge -->
+                <div class="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-xs mx-auto shrink-0">
+                    @if($isCons)
+                        <svg class="w-9 h-9 text-[#04683d]" fill="none" stroke="currentColor" stroke-width="3.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    @else
+                        <svg class="w-9 h-9 text-[#b31d1d]" fill="none" stroke="currentColor" stroke-width="3.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    @endif
                 </div>
 
-                <div class="pt-4 border-t border-white/20 flex items-center justify-between text-[11px] text-white/80">
-                    <span>&lambda; Max: <strong>{{ number_format($lambdaVal, 3) }}</strong></span>
-                    <span>CI: <strong>{{ number_format($ciVal, 3) }}</strong></span>
+                <!-- Title -->
+                <span class="text-sm sm:text-base font-bold text-white tracking-wide block">
+                    Consistency Ratio (CR)
+                </span>
+
+                <!-- Big Value -->
+                <div class="text-5xl sm:text-6xl font-black text-white tracking-tight my-1">
+                    {{ number_format($crVal, 3) }}
+                </div>
+
+                <!-- Criteria Condition & Description -->
+                <div class="space-y-1.5">
+                    <div class="text-sm sm:text-base font-bold text-white">
+                        {{ $isCons ? 'Nilai CR ≤ 0.10' : 'Nilai CR > 0.10' }}
+                    </div>
+                    <p class="text-xs sm:text-sm text-white/95 leading-relaxed max-w-xs mx-auto">
+                        {{ $isCons ? 'Perbandingan kriteria dinyatakan konsisten dan dapat diterima.' : 'Perbandingan kriteria perlu diperiksa kembali.' }}
+                    </p>
                 </div>
             </div>
         </div>
@@ -243,15 +305,25 @@
             </a>
 
             <div class="flex items-center gap-3">
-                <button type="button" wire:click="resetPairs" class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 text-xs font-semibold shadow-xs transition">
-                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                <button type="button" wire:click="resetPairs" class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border {{ $isCons ? 'border-slate-200 text-slate-600 hover:bg-slate-50' : 'border-red-300 text-red-600 hover:bg-red-50' }} bg-white text-xs font-semibold shadow-xs transition">
+                    <svg class="w-4 h-4 {{ $isCons ? 'text-slate-400' : 'text-red-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                     <span>Reset</span>
                 </button>
 
-                <a href="{{ route('topsis.index') }}" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#085a3c] hover:bg-[#064830] text-white text-xs font-semibold shadow-xs transition">
-                    <span>Lanjut ke Perhitungan TOPSIS</span>
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                </a>
+                @if($isCons)
+                    <a href="{{ route('topsis.index') }}" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#085a3c] hover:bg-[#064830] text-white text-xs font-semibold shadow-xs transition">
+                        <span>Lanjut ke Perhitungan TOPSIS</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </a>
+                @else
+                    <button type="button" 
+                            disabled 
+                            title="Perbandingan kriteria perlu diperiksa kembali (CR > 0.10). Tidak dapat melanjutkan ke perhitungan TOPSIS."
+                            class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#b31d1d] text-white text-xs font-semibold shadow-xs cursor-not-allowed select-none transition">
+                        <span>Lanjut Ke Perhitungan TOPSIS</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </button>
+                @endif
             </div>
         </div>
     @endif

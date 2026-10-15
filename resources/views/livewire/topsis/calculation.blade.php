@@ -1,4 +1,53 @@
-<div class="space-y-8">
+<div class="space-y-8 relative">
+    <!-- Centered Modal Alert Notification (Muncul di Tengah Konten Utama, Bukan Dari Sidebar) -->
+    @if($notification)
+        <div class="fixed inset-0 left-0 md:left-64 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+            <div class="animate-modal-pop bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border {{ $notification['type'] === 'success' ? 'border-emerald-100 shadow-emerald-950/15' : 'border-red-100 shadow-red-950/15' }} space-y-5 text-center relative">
+                <!-- Close (X) button in top-right corner -->
+                <button type="button" 
+                        wire:click="dismissNotification" 
+                        class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition"
+                        title="Tutup">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+
+                <!-- Icon in Center -->
+                <div class="mx-auto w-16 h-16 rounded-2xl {{ $notification['type'] === 'success' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-red-50 text-red-600 border border-red-100' }} flex items-center justify-center shadow-inner">
+                    @if($notification['type'] === 'success')
+                        <svg class="w-9 h-9 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    @else
+                        <svg class="w-9 h-9 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                    @endif
+                </div>
+
+                <!-- Text Content -->
+                <div class="space-y-2">
+                    <h3 class="text-lg font-bold {{ $notification['type'] === 'success' ? 'text-slate-900' : 'text-red-900' }}">
+                        {{ $notification['title'] }}
+                    </h3>
+                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed px-2">
+                        {{ $notification['message'] }}
+                    </p>
+                </div>
+
+                <!-- Action Button at Bottom -->
+                <div class="pt-2">
+                    <button type="button" 
+                            wire:click="dismissNotification" 
+                            class="w-full py-2.5 px-4 rounded-xl {{ $notification['type'] === 'success' ? 'bg-[#085a3c] hover:bg-[#064830]' : 'bg-red-600 hover:bg-red-700' }} text-white text-xs font-bold shadow-md transition">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <!-- Header Toolbar -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -16,9 +65,22 @@
                 <span>Lihat Skala Penilaian</span>
             </a>
 
-            <button type="button" wire:click="runCalculation" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#085a3c] hover:bg-[#064830] text-white text-xs font-bold shadow-sm transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                <span>Hitung TOPSIS</span>
+            <button type="button" 
+                    wire:click="runCalculation"
+                    wire:loading.attr="disabled"
+                    wire:target="runCalculation"
+                    class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#085a3c] hover:bg-[#064830] disabled:opacity-60 disabled:cursor-not-allowed text-white text-xs font-bold shadow-sm transition">
+                <span wire:loading.remove wire:target="runCalculation" class="inline-flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                    <span>Hitung TOPSIS</span>
+                </span>
+                <span wire:loading.inline-flex wire:target="runCalculation" class="items-center gap-2">
+                    <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                    </svg>
+                    <span>Sedang Menghitung TOPSIS...</span>
+                </span>
             </button>
         </div>
     </div>
@@ -84,7 +146,7 @@
     <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden space-y-4 p-6">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
             <h3 class="text-sm font-bold text-slate-800">Hasil Perangkingan Prioritas</h3>
-            <span class="text-xs text-slate-400 font-medium">Berdasarkan Nilai Preferensi ($V_i$)</span>
+            <span class="text-xs text-slate-400 font-medium">Berdasarkan Nilai Preferensi (V)</span>
         </div>
 
         <div class="overflow-x-auto">

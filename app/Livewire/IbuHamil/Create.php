@@ -112,7 +112,7 @@ class Create extends Component
     public function render()
     {
         $desaList = json_decode(Setting::get('desa_list', '[]'), true) ?: [
-            'Taman Sari', 'Maphar', 'Tangki', 'Mangga Besar', 'Keagungan', 'Glodok', 'Pinangsia', 'Krukut'
+            'Parakancanggah', 'Cendana', 'Krandegan', 'Semarang', 'Sokayasa', 'Sokanandi'
         ];
 
         return view('livewire.ibu-hamil.create', [

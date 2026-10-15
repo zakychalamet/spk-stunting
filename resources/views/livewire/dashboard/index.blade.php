@@ -1,10 +1,10 @@
 <div class="space-y-8">
-    <!-- GREETING BANNER matching PDF page 2 -->
-    <div class="bg-[#085a3c] text-white rounded-3xl p-8 sm:p-10 shadow-sm relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
+    <!-- GREETING BANNER matching Foto 2 -->
+    <div class="bg-gradient-to-r from-[#085a3c] from-70% via-[#085a3c] to-[#0d734e] text-white rounded-3xl p-7 sm:p-9 shadow-sm relative overflow-hidden flex flex-col justify-center min-h-[220px]">
         <!-- Background decorative pattern -->
-        <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-emerald-700/30 rounded-full blur-2xl pointer-events-none"></div>
+        <div class="absolute -right-10 -bottom-10 w-72 h-72 bg-emerald-700/30 rounded-full blur-2xl pointer-events-none"></div>
 
-        <div class="space-y-3 z-10 max-w-xl">
+        <div class="space-y-3 z-10 max-w-xl md:max-w-md lg:max-w-xl pr-0 md:pr-4">
             <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">
                 {{ $greeting }}, {{ auth()->user()->name ?? 'Bidan Kesehatan' }}
             </h2>
@@ -20,12 +20,11 @@
             </div>
         </div>
 
-        <!-- Medical Hero SVG Illustration -->
-        <div class="z-10 shrink-0 hidden md:flex items-center justify-center w-40 h-40 rounded-full bg-emerald-700/40 border border-emerald-500/30 p-6">
-            <svg class="w-24 h-24 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4m0 0l2 2m-2-2l-2 2"></path>
-            </svg>
+        <!-- Doctor Hero Illustration matching Foto 2 -->
+        <div class="z-10 shrink-0 hidden md:flex absolute right-6 sm:right-8 lg:right-12 xl:right-16 bottom-0 items-end justify-center pointer-events-none">
+            <img src="{{ asset('images/doctor-banner.png') }}?v={{ filemtime(public_path('images/doctor-banner.png')) }}" 
+                 alt="Dokter / Tenaga Medis Bidan" 
+                 class="h-36 md:h-40 lg:h-44 xl:h-48 w-auto object-contain object-bottom drop-shadow-md block">
         </div>
     </div>
 
@@ -35,8 +34,8 @@
         <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col justify-between space-y-3">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Ibu Hamil</span>
-                <div class="w-7 h-7 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                <div class="w-11 h-11 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                 </div>
             </div>
             <div class="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight">
@@ -48,8 +47,8 @@
         <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col justify-between space-y-3 border-b-2 border-b-red-500">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Prioritas Tinggi</span>
-                <div class="w-7 h-7 rounded-lg bg-red-50 text-red-600 flex items-center justify-center">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                <div class="w-11 h-11 rounded-xl bg-red-50 text-red-600 flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                 </div>
             </div>
             <div class="text-2xl sm:text-3xl font-extrabold text-red-600 tracking-tight">
@@ -61,8 +60,8 @@
         <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col justify-between space-y-3 border-b-2 border-b-amber-500">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Prioritas Sedang</span>
-                <div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </div>
             </div>
             <div class="text-2xl sm:text-3xl font-extrabold text-amber-600 tracking-tight">
@@ -74,8 +73,8 @@
         <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col justify-between space-y-3 border-b-2 border-b-emerald-500">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Prioritas Rendah</span>
-                <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                 </div>
             </div>
             <div class="text-2xl sm:text-3xl font-extrabold text-emerald-600 tracking-tight">
@@ -130,8 +129,10 @@
                     <div class="flex flex-col items-center justify-end h-full gap-2.5 flex-1 group">
                         <span class="text-xs sm:text-sm font-bold text-slate-700 group-hover:scale-110 transition-transform">{{ $item['count'] }}</span>
                         <div class="w-full flex items-end justify-center flex-1 h-full pb-0.5">
-                            <div class="w-full max-w-[56px] sm:max-w-[64px] {{ $item['color'] }} rounded-none transition-all duration-300 shadow-xs" 
-                                 style="background-color: {{ $item['hex'] }}; height: {{ max(10, $heightPct) }}%"></div>
+                            @if($item['count'] > 0)
+                                <div class="w-full max-w-[56px] sm:max-w-[64px] {{ $item['color'] }} rounded-none transition-all duration-300 shadow-xs" 
+                                     style="background-color: {{ $item['hex'] }}; height: {{ max(10, $heightPct) }}%"></div>
+                            @endif
                         </div>
                         <span class="text-xs text-slate-600 font-semibold text-center line-clamp-1 group-hover:text-slate-900" title="{{ $item['label'] }}">{{ $item['label'] }}</span>
                     </div>

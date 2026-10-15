@@ -57,6 +57,13 @@ class Login extends Component
         $this->addError('login_failed', 'Username atau kata sandi yang Anda masukkan tidak sesuai.');
     }
 
+    public function fillDemo(string $role): void
+    {
+        $this->username = $role;
+        $this->password = 'password';
+        $this->resetErrorBag();
+    }
+
     public function render()
     {
         return view('livewire.auth.login');

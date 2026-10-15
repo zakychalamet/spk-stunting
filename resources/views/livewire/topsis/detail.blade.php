@@ -23,7 +23,7 @@
         <!-- 1. PENYUSUNAN MATRIKS KEPUTUSAN (X) -->
         <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                <h3 class="text-sm font-bold text-slate-800">1. Penyusunan Matriks Keputusan ($X$)</h3>
+                <h3 class="text-sm font-bold text-slate-800">1. Penyusunan Matriks Keputusan (X)</h3>
                 <span class="text-xs text-slate-400 font-medium">Skor Penilaian Risiko Kriteria (1–4)</span>
             </div>
 
@@ -58,8 +58,8 @@
         <!-- 2. NORMALISASI MATRIKS KEPUTUSAN (R) -->
         <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                <h3 class="text-sm font-bold text-slate-800">2. Normalisasi Matriks Keputusan ($R$)</h3>
-                <span class="text-xs text-slate-400 font-medium">Formula: $r_{ij} = \frac{x_{ij}}{\sqrt{\sum x_{kj}^2}}$</span>
+                <h3 class="text-sm font-bold text-slate-800">2. Normalisasi Matriks Keputusan (R)</h3>
+                <span class="text-xs text-slate-400 font-medium">Formula: r<sub>ij</sub> = x<sub>ij</sub> / &radic;(&sum; x<sub>kj</sub>&sup2;)</span>
             </div>
 
             <div class="overflow-x-auto">
@@ -92,14 +92,14 @@
             <!-- Accordion formula -->
             <div class="pt-2 border-t border-slate-100">
                 <button type="button" wire:click="toggleFormula" class="w-full flex items-center justify-between text-xs font-semibold text-slate-500 hover:text-emerald-700 transition py-1">
-                    <span>Lihat Detail Perhitungan Pembagi Normalisasi ($S_j$)</span>
+                    <span>Lihat Detail Perhitungan Pembagi Normalisasi (S<sub>j</sub>)</span>
                     <span>{{ $showStep2Formula ? '▲ Sembunyikan' : '▼ Tampilkan' }}</span>
                 </button>
                 @if($showStep2Formula)
                     <div class="mt-3 p-4 bg-slate-50 rounded-xl text-xs text-slate-600 font-mono space-y-2 leading-relaxed">
                         @foreach($topsisData['criterionCodes'] as $code)
                             <div>
-                                Pembagi <strong>{{ $code }}</strong>: $\sqrt{\sum x_{kj}^2}$ = <strong>{{ number_format($topsisData['divisors'][$code], 4) }}</strong>
+                                Pembagi <strong>{{ $code }}</strong>: &radic;(&sum; x<sub>kj</sub>&sup2;) = <strong>{{ number_format($topsisData['divisors'][$code], 4) }}</strong>
                             </div>
                         @endforeach
                     </div>
@@ -110,8 +110,8 @@
         <!-- 3. MATRIKS KEPUTUSAN TERBOBOT (V) -->
         <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                <h3 class="text-sm font-bold text-slate-800">3. Matriks Keputusan Terbobot ($V$)</h3>
-                <span class="text-xs text-slate-400 font-medium">Formula: $v_{ij} = w_j \cdot r_{ij}$</span>
+                <h3 class="text-sm font-bold text-slate-800">3. Matriks Keputusan Terbobot (V)</h3>
+                <span class="text-xs text-slate-400 font-medium">Formula: v<sub>ij</sub> = w<sub>j</sub> &times; r<sub>ij</sub></span>
             </div>
 
             <div class="overflow-x-auto">
@@ -145,7 +145,7 @@
         <!-- 4. SOLUSI IDEAL POSITIF (A+) & NEGATIF (A-) -->
         <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                <h3 class="text-sm font-bold text-slate-800">4. Solusi Ideal Positif ($A^+$) dan Solusi Ideal Negatif ($A^-$)</h3>
+                <h3 class="text-sm font-bold text-slate-800">4. Solusi Ideal Positif (A+) dan Solusi Ideal Negatif (A-)</h3>
                 <span class="text-xs text-slate-400 font-medium">Sifat Benefit (Risiko Maksimal = Positif, Risiko Minimal = Negatif)</span>
             </div>
 
@@ -163,7 +163,7 @@
                     <tbody class="divide-y divide-slate-100 text-slate-700">
                         <tr class="bg-emerald-50/50">
                             <td class="py-3 px-4 font-bold text-emerald-800 text-left font-sans">
-                                Solusi Ideal Positif ($A^+$)
+                                Solusi Ideal Positif (A+)
                             </td>
                             <td class="py-3 px-3 font-bold">{{ number_format($topsisData['idealPositive']['K1'], 6) }}</td>
                             <td class="py-3 px-3 font-bold">{{ number_format($topsisData['idealPositive']['K2'], 6) }}</td>
@@ -172,7 +172,7 @@
                         </tr>
                         <tr class="bg-rose-50/50">
                             <td class="py-3 px-4 font-bold text-rose-800 text-left font-sans">
-                                Solusi Ideal Negatif ($A^-$)
+                                Solusi Ideal Negatif (A-)
                             </td>
                             <td class="py-3 px-3 font-bold">{{ number_format($topsisData['idealNegative']['K1'], 6) }}</td>
                             <td class="py-3 px-3 font-bold">{{ number_format($topsisData['idealNegative']['K2'], 6) }}</td>
@@ -187,7 +187,7 @@
         <!-- 5. JARAK SOLUSI IDEAL POSITIF (D+) DAN NEGATIF (D-) -->
         <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                <h3 class="text-sm font-bold text-slate-800">5. Jarak Solusi Ideal Positif ($D^+$) dan Solusi Ideal Negatif ($D^-$)</h3>
+                <h3 class="text-sm font-bold text-slate-800">5. Jarak Solusi Ideal Positif (D+) dan Solusi Ideal Negatif (D-)</h3>
                 <span class="text-xs text-slate-400 font-medium">Jarak Euclidean</span>
             </div>
 
@@ -196,8 +196,8 @@
                     <thead>
                         <tr class="bg-slate-50 text-slate-600 font-bold border-b border-slate-200 font-sans">
                             <th class="py-3 px-4 text-left">ALTERNATIF</th>
-                            <th class="py-3 px-3">Jarak Ideal Positif ($D^+$)</th>
-                            <th class="py-3 px-3">Jarak Ideal Negatif ($D^-$)</th>
+                            <th class="py-3 px-3">Jarak Ideal Positif (D+)</th>
+                            <th class="py-3 px-3">Jarak Ideal Negatif (D-)</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 text-slate-700">
@@ -218,8 +218,8 @@
         <!-- 6. NILAI PREFERENSI (V) DAN PERINGKAT -->
         <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                <h3 class="text-sm font-bold text-slate-800">6. Nilai Preferensi ($V_i$) dan Peringkat Prioritas</h3>
-                <span class="text-xs text-slate-400 font-medium">Formula: $V_i = \frac{D_i^-}{D_i^+ + D_i^-}$</span>
+                <h3 class="text-sm font-bold text-slate-800">6. Nilai Preferensi (V) dan Peringkat Prioritas</h3>
+                <span class="text-xs text-slate-400 font-medium">Formula: V = D- / (D+ + D-)</span>
             </div>
 
             <div class="overflow-x-auto">
@@ -228,7 +228,7 @@
                         <tr class="bg-slate-50 text-slate-600 font-bold border-b border-slate-200">
                             <th class="py-3 px-3">Peringkat</th>
                             <th class="py-3 px-4 text-left">ALTERNATIF</th>
-                            <th class="py-3 px-3">Nilai Preferensi ($V_i$)</th>
+                            <th class="py-3 px-3">Nilai Preferensi (V)</th>
                             <th class="py-3 px-3">Prioritas</th>
                         </tr>
                     </thead>

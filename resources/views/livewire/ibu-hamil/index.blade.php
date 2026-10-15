@@ -54,8 +54,8 @@
                         <option value="">Semua Status Anemia</option>
                         <option value="normal">Normal (≥ 11)</option>
                         <option value="ringan">Ringan (10 - 10,9)</option>
-                        <option value="sedang">Sedang (7 - 9,9)</option>
-                        <option value="berat">Berat (&lt; 7)</option>
+                        <option value="sedang">Sedang (8 - 9,9)</option>
+                        <option value="berat">Berat (&lt; 8)</option>
                     </select>
                 </div>
 
@@ -193,12 +193,13 @@
         </div>
 
         <!-- Pagination & Summary -->
-        <div class="p-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div class="text-xs text-slate-500 font-medium">
+        <div class="px-5 py-3.5 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/40">
+            <div class="text-xs text-slate-500 font-medium flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-emerald-600/70 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                 @if($items->total() > 0)
-                    Menampilkan {{ $items->firstItem() }} sampai {{ $items->lastItem() }} dari {{ $items->total() }} data
+                    <span>Menampilkan <strong class="font-semibold text-slate-700">{{ $items->firstItem() }}</strong> – <strong class="font-semibold text-slate-700">{{ $items->lastItem() }}</strong> dari <strong class="font-semibold text-slate-700">{{ $items->total() }}</strong> total data</span>
                 @else
-                    Menampilkan 0 data
+                    <span>Tidak ada data</span>
                 @endif
             </div>
             <div>
@@ -251,9 +252,34 @@
                         <span>Unduh Format Template CSV</span>
                     </a>
 
-                    <div class="pt-2">
+                    <div class="pt-2" 
+                         x-data="{ isUploading: false, progress: 0 }"
+                         x-on:livewire-upload-start="isUploading = true"
+                         x-on:livewire-upload-finish="isUploading = false"
+                         x-on:livewire-upload-error="isUploading = false"
+                         x-on:livewire-upload-progress="progress = $event.detail.progress">
+                        
                         <input type="file" wire:model="importFile" accept=".csv, .xlsx, .xls" class="w-full text-xs text-slate-500 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
-                        @error('importFile') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror
+                        
+                        <!-- Uploading progress -->
+                        <div x-show="isUploading" class="mt-2 space-y-1">
+                            <div class="flex justify-between text-[11px] text-emerald-700 font-semibold">
+                                <span>Mengunggah file ke sistem...</span>
+                                <span x-text="progress + '%'"></span>
+                            </div>
+                            <div class="w-full bg-emerald-100 rounded-full h-1.5 overflow-hidden">
+                                <div class="bg-emerald-600 h-1.5 rounded-full transition-all duration-150" :style="'width: ' + progress + '%'"></div>
+                            </div>
+                        </div>
+
+                        @if($importFile)
+                            <div class="mt-2 p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2 text-xs text-emerald-800 font-medium">
+                                <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                <span class="truncate">File siap diimpor: <strong>{{ $importFile->getClientOriginalName() }}</strong></span>
+                            </div>
+                        @endif
+
+                        @error('importFile') <p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p> @enderror
                     </div>
 
                     @if($importMessage)
@@ -267,9 +293,14 @@
                     <button type="button" wire:click="$set('showImportModal', false)" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-semibold hover:bg-slate-50 transition">
                         Batal
                     </button>
-                    <button type="button" wire:click="importExcel" wire:loading.attr="disabled" class="px-5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold shadow-xs transition">
-                        <span wire:loading.remove wire:target="importExcel">Mulai Impor</span>
-                        <span wire:loading wire:target="importExcel">Mengunggah...</span>
+                    <button type="button" 
+                            wire:click="importExcel" 
+                            wire:loading.attr="disabled" 
+                            wire:target="importFile, importExcel"
+                            class="px-5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-semibold shadow-xs transition flex items-center gap-2">
+                        <span wire:loading.remove wire:target="importFile, importExcel">Mulai Impor</span>
+                        <span wire:loading wire:target="importFile">Mengunggah File...</span>
+                        <span wire:loading wire:target="importExcel">Memproses Data...</span>
                     </button>
                 </div>
             </div>

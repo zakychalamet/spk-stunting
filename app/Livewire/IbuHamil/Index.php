@@ -4,6 +4,7 @@ namespace App\Livewire\IbuHamil;
 
 use App\Models\IbuHamil;
 use App\Models\Setting;
+use App\Models\TopsisResult;
 use App\Services\ExcelService;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -79,6 +80,7 @@ class Index extends Component
         if ($this->deleteId) {
             $ibuHamil = IbuHamil::find($this->deleteId);
             if ($ibuHamil) {
+                TopsisResult::where('ibu_hamil_id', $this->deleteId)->delete();
                 $ibuHamil->delete();
                 session()->flash('success', "Data {$this->deleteName} berhasil dihapus.");
             }
@@ -91,10 +93,19 @@ class Index extends Component
     public function importExcel()
     {
         $this->validate([
-            'importFile' => 'required|file|mimes:csv,txt,xlsx,xls|max:5120',
+            'importFile' => [
+                'required',
+                'file',
+                'max:5120',
+                function ($attribute, $value, $fail) {
+                    $ext = strtolower($value->getClientOriginalExtension());
+                    if (!in_array($ext, ['csv', 'txt', 'xlsx', 'xls'])) {
+                        $fail('Format file harus berupa CSV (.csv) atau Excel (.xlsx/.xls).');
+                    }
+                },
+            ],
         ], [
             'importFile.required' => 'Silakan pilih file CSV/Excel terlebih dahulu.',
-            'importFile.mimes' => 'Format file harus berupa CSV (.csv) atau Excel (.xlsx/.xls).',
         ]);
 
         $excelService = new ExcelService();
@@ -102,9 +113,15 @@ class Index extends Component
 
         if ($res['success']) {
             $count = $res['count'];
-            $this->showImportModal = false;
-            $this->reset('importFile');
-            session()->flash('success', "Berhasil mengimpor $count data ibu hamil.");
+            if ($count > 0) {
+                $this->showImportModal = false;
+                $this->reset('importFile');
+                $extra = !empty($res['errors']) ? ' (' . count($res['errors']) . ' baris dilewati karena format tidak sesuai)' : '';
+                session()->flash('success', "Berhasil mengimpor $count data ibu hamil.$extra");
+            } else {
+                $errMsg = !empty($res['errors']) ? implode(', ', array_slice($res['errors'], 0, 3)) : 'Tidak ada data yang berhasil diimpor.';
+                $this->importMessage = $errMsg;
+            }
         } else {
             $this->importMessage = $res['message'] ?? 'Gagal mengimpor file.';
         }
@@ -147,7 +164,7 @@ class Index extends Component
         $items = $query->latest()->paginate(10);
 
         $desaList = json_decode(Setting::get('desa_list', '[]'), true) ?: [
-            'Taman Sari', 'Maphar', 'Tangki', 'Mangga Besar', 'Keagungan', 'Glodok', 'Pinangsia', 'Krukut'
+            'Parakancanggah', 'Cendana', 'Krandegan', 'Semarang', 'Sokayasa', 'Sokanandi'
         ];
 
         return view('livewire.ibu-hamil.index', [

@@ -9,9 +9,18 @@
             <a href="{{ route('ahp.index') }}" class="px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 text-xs font-semibold transition">
                 Kembali ke Matriks
             </a>
-            <a href="{{ route('topsis.index') }}" class="px-5 py-2 rounded-xl bg-[#085a3c] hover:bg-[#064830] text-white text-xs font-semibold shadow-xs transition">
-                Lanjut ke TOPSIS &rarr;
-            </a>
+            @if($detailData['isConsistent'] ?? true)
+                <a href="{{ route('topsis.index') }}" class="px-5 py-2 rounded-xl bg-[#085a3c] hover:bg-[#064830] text-white text-xs font-semibold shadow-xs transition">
+                    Lanjut ke TOPSIS &rarr;
+                </a>
+            @else
+                <button type="button" 
+                        disabled 
+                        title="Perbandingan kriteria perlu diperiksa kembali (CR > 0.10). Tidak dapat melanjutkan ke perhitungan TOPSIS."
+                        class="px-5 py-2 rounded-xl bg-[#b31d1d] text-white text-xs font-semibold shadow-xs cursor-not-allowed select-none transition">
+                    Lanjut ke TOPSIS &rarr;
+                </button>
+            @endif
         </div>
     </div>
 
@@ -26,7 +35,7 @@
         <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h3 class="text-sm font-bold text-slate-800">1. Matriks Perbandingan Berpasangan</h3>
-                <span class="text-xs text-slate-400 font-medium">Skala Saaty $A = [a_{ij}]$</span>
+                <span class="text-xs text-slate-400 font-medium">Skala Saaty A = [a<sub>ij</sub>]</span>
             </div>
 
             <div class="overflow-x-auto">
@@ -103,7 +112,7 @@
         <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h3 class="text-sm font-bold text-slate-800">2. Normalisasi Matriks Berpasangan</h3>
-                <span class="text-xs text-slate-400 font-medium">Formula: $r_{ij} = \frac{a_{ij}}{\sum a_{kj}}$</span>
+                <span class="text-xs text-slate-400 font-medium">Formula: r<sub>ij</sub> = a<sub>ij</sub> / &sum; a<sub>kj</sub></span>
             </div>
 
             <div class="overflow-x-auto">
@@ -166,7 +175,7 @@
                         @if($first)
                             <div>Contoh Baris 1, Kolom 1 ({{ $first->name }}, {{ $first->name }}):</div>
                             <div class="pl-4">
-                                $r_{11} = \frac{1}{{{ number_format($detailData['colSums'][$first->id] ?? 2, 4) }}} = <strong>{{ number_format($detailData['normalizedMatrix'][$first->id][$first->id] ?? 0.49, 4) }}</strong>
+                                r<sub>11</sub> = 1 / {{ number_format($detailData['colSums'][$first->id] ?? 2, 4) }} = <strong>{{ number_format($detailData['normalizedMatrix'][$first->id][$first->id] ?? 0.49, 4) }}</strong>
                             </div>
                         @endif
                     </div>
@@ -178,7 +187,7 @@
         <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h3 class="text-sm font-bold text-slate-800">3. Bobot Prioritas (Eigen Vector)</h3>
-                <span class="text-xs text-slate-400 font-medium">Formula: $w_i = \frac{1}{n} \sum r_{ij}$</span>
+                <span class="text-xs text-slate-400 font-medium">Formula: w<sub>i</sub> = (1/n) &times; &sum; r<sub>ij</sub></span>
             </div>
 
             <div class="overflow-x-auto">

@@ -75,7 +75,7 @@ class AhpService
         $weightPercentages = [];
         foreach ($criteriaIds as $rowId) {
             $eigenVector = $n > 0 ? ($rowSums[$rowId] / $n) : 0;
-            $weights[$rowId] = round($eigenVector, 4);
+            $weights[$rowId] = (float) $eigenVector;
             $weightPercentages[$rowId] = round($eigenVector * 100, 1);
         }
 

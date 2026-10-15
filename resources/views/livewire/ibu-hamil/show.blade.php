@@ -77,10 +77,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="p-4 rounded-2xl border border-slate-100 bg-slate-50/50">
                     <span class="text-xs text-slate-400 font-medium block mb-1">Status Anemia</span>
-                    <div class="text-base font-bold text-slate-800">{{ $ibuHamil->status_anemia ?: 'Normal' }}</div>
-                    @if($ibuHamil->kadar_hb)
-                        <span class="text-xs text-slate-500 font-medium">{{ $ibuHamil->kadar_hb }} g/dL</span>
-                    @endif
+                    <div class="text-base font-bold text-slate-800">{{ $ibuHamil->status_anemia_label }}</div>
                 </div>
 
                 <div class="p-4 rounded-2xl border border-slate-100 bg-slate-50/50">
@@ -90,20 +87,17 @@
 
                 <div class="p-4 rounded-2xl border border-slate-100 bg-slate-50/50">
                     <span class="text-xs text-slate-400 font-medium block mb-1">Lingkar Lengan Atas (LILA)</span>
-                    <span class="text-base font-bold text-slate-800 {{ $ibuHamil->lila < 23 ? 'text-red-600' : 'text-slate-800' }}">
+                    <span class="text-base font-bold text-slate-800 {{ $ibuHamil->lila < 23.5 ? 'text-red-600' : 'text-slate-800' }}">
                         {{ $ibuHamil->lila }} cm
                     </span>
-                    @if($ibuHamil->lila < 23)
-                        <span class="text-xs text-red-600 font-semibold block mt-0.5">Indikasi KEK (&lt; 23 cm)</span>
+                    @if($ibuHamil->lila < 23.5)
+                        <span class="text-xs text-red-600 font-semibold block mt-0.5">Indikasi KEK (&lt; 23.5 cm)</span>
                     @endif
                 </div>
 
                 <div class="p-4 rounded-2xl border border-slate-100 bg-slate-50/50">
                     <span class="text-xs text-slate-400 font-medium block mb-1">Berat Badan Sebelum Hamil</span>
                     <span class="text-base font-bold text-slate-800">{{ $ibuHamil->berat_badan_sebelum_hamil ? $ibuHamil->berat_badan_sebelum_hamil . ' kg' : '-' }}</span>
-                    @if($ibuHamil->tinggi_badan)
-                        <span class="text-xs text-slate-400 block mt-0.5">Tinggi: {{ $ibuHamil->tinggi_badan }} cm</span>
-                    @endif
                 </div>
             </div>
         </div>

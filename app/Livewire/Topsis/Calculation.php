@@ -18,6 +18,7 @@ class Calculation extends Component
 
     public string $search = '';
     public string $filterPriority = '';
+    public ?array $notification = null;
 
     public function mount()
     {
@@ -28,15 +29,28 @@ class Calculation extends Component
     public function loadStats()
     {
         $this->totalIbuHamil = IbuHamil::count();
-        $this->countTinggi = TopsisResult::where('priority', 'Tinggi')->count();
-        $this->countSedang = TopsisResult::where('priority', 'Sedang')->count();
-        $this->countRendah = TopsisResult::where('priority', 'Rendah')->count();
+        $activeId = $this->activeAhp?->id;
+
+        $query = TopsisResult::whereHas('ibuHamil');
+        if ($activeId) {
+            $query->where('ahp_calculation_id', $activeId);
+        }
+
+        $this->countTinggi = (clone $query)->where('priority', 'Tinggi')->count();
+        $this->countSedang = (clone $query)->where('priority', 'Sedang')->count();
+        $this->countRendah = (clone $query)->where('priority', 'Rendah')->count();
     }
 
     public function runCalculation(TopsisService $topsisService)
     {
         if (!$this->activeAhp) {
-            session()->flash('error', 'Belum ada bobot AHP yang aktif. Silakan lakukan perhitungan AHP terlebih dahulu.');
+            $msg = 'Belum ada bobot AHP yang aktif. Silakan lakukan perhitungan AHP terlebih dahulu.';
+            session()->flash('error', $msg);
+            $this->notification = [
+                'type' => 'error',
+                'title' => 'Perhitungan TOPSIS Gagal',
+                'message' => $msg,
+            ];
             return redirect()->route('ahp.index');
         }
 
@@ -45,16 +59,38 @@ class Calculation extends Component
 
             if (!$calculation['hasData']) {
                 session()->flash('error', $calculation['message']);
+                $this->notification = [
+                    'type' => 'error',
+                    'title' => 'Data Tidak Cukup',
+                    'message' => $calculation['message'],
+                ];
                 return;
             }
 
             $topsisService->saveResults($calculation);
             $this->loadStats();
 
-            session()->flash('success', 'Perhitungan metode TOPSIS berhasil dieksekusi. Hasil perangkingan telah diperbarui.');
+            $msg = 'Perhitungan metode TOPSIS berhasil dieksekusi. Hasil perangkingan prioritas ibu hamil telah diperbarui.';
+            session()->flash('success', $msg);
+            $this->notification = [
+                'type' => 'success',
+                'title' => 'TOPSIS Berhasil Dihitung!',
+                'message' => $msg,
+            ];
         } catch (\Throwable $e) {
-            session()->flash('error', 'Terjadi kesalahan saat menghitung TOPSIS: ' . $e->getMessage());
+            $msg = 'Terjadi kesalahan saat menghitung TOPSIS: ' . $e->getMessage();
+            session()->flash('error', $msg);
+            $this->notification = [
+                'type' => 'error',
+                'title' => 'Terjadi Kesalahan',
+                'message' => $msg,
+            ];
         }
+    }
+
+    public function dismissNotification()
+    {
+        $this->notification = null;
     }
 
     public function render()

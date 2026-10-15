@@ -24,8 +24,8 @@ class CriteriaSeeder extends Seeder
         $k1Scales = [
             ['parameter' => 'Normal (≥ 11)', 'score' => 1, 'label' => 'Normal', 'category' => 'Normal', 'min_value' => 11.0, 'max_value' => 99.0],
             ['parameter' => 'Ringan (10 - 10,9)', 'score' => 2, 'label' => 'Anemia Ringan', 'category' => 'Rendah', 'min_value' => 10.0, 'max_value' => 10.9],
-            ['parameter' => 'Sedang (7 - 9,9)', 'score' => 3, 'label' => 'Anemia Sedang', 'category' => 'Sedang', 'min_value' => 7.0, 'max_value' => 9.9],
-            ['parameter' => 'Berat (< 7)', 'score' => 4, 'label' => 'Anemia Berat', 'category' => 'Tinggi', 'min_value' => 0.0, 'max_value' => 6.99],
+            ['parameter' => 'Sedang (8 - 9,9)', 'score' => 3, 'label' => 'Anemia Sedang', 'category' => 'Sedang', 'min_value' => 8.0, 'max_value' => 9.9],
+            ['parameter' => 'Berat (< 8)', 'score' => 4, 'label' => 'Anemia Berat', 'category' => 'Tinggi', 'min_value' => 0.0, 'max_value' => 7.99],
         ];
 
         foreach ($k1Scales as $scale) {
@@ -34,6 +34,7 @@ class CriteriaSeeder extends Seeder
                 $scale
             );
         }
+        CriterionScale::where('criterion_id', $k1->id)->whereNotIn('parameter', array_column($k1Scales, 'parameter'))->delete();
 
         // 2. K2: IMT
         $k2 = Criterion::updateOrCreate(
@@ -46,10 +47,10 @@ class CriteriaSeeder extends Seeder
         );
 
         $k2Scales = [
-            ['parameter' => '18.5 - 24.9', 'score' => 1, 'label' => 'IMT Normal', 'category' => 'Normal', 'min_value' => 18.5, 'max_value' => 24.9],
+            ['parameter' => '18.5 - 24.9', 'score' => 1, 'label' => 'Normal', 'category' => 'Normal', 'min_value' => 18.5, 'max_value' => 24.9],
             ['parameter' => '25.0 - 29.9', 'score' => 2, 'label' => 'Berat Badan Berlebih', 'category' => 'Rendah', 'min_value' => 25.0, 'max_value' => 29.9],
-            ['parameter' => '17.0 - 18.4', 'score' => 3, 'label' => 'Kurus', 'category' => 'Sedang', 'min_value' => 17.0, 'max_value' => 18.4],
-            ['parameter' => '< 17.0 atau ≥ 30.0', 'score' => 4, 'label' => 'Sangat Kurus / Obesitas', 'category' => 'Tinggi', 'min_value' => null, 'max_value' => null],
+            ['parameter' => '≥ 30', 'score' => 3, 'label' => 'Obesitas', 'category' => 'Sedang', 'min_value' => 30.0, 'max_value' => 99.0],
+            ['parameter' => '< 18.5', 'score' => 4, 'label' => 'Kurus', 'category' => 'Tinggi', 'min_value' => 0.0, 'max_value' => 18.49],
         ];
 
         foreach ($k2Scales as $scale) {
@@ -58,6 +59,7 @@ class CriteriaSeeder extends Seeder
                 $scale
             );
         }
+        CriterionScale::where('criterion_id', $k2->id)->whereNotIn('parameter', array_column($k2Scales, 'parameter'))->delete();
 
         // 3. K3: LILA
         $k3 = Criterion::updateOrCreate(
@@ -70,8 +72,8 @@ class CriteriaSeeder extends Seeder
         );
 
         $k3Scales = [
-            ['parameter' => '≥ 23', 'score' => 1, 'label' => 'Normal', 'category' => 'Normal', 'min_value' => 23.0, 'max_value' => 99.0],
-            ['parameter' => '< 23', 'score' => 4, 'label' => 'KEK (Kekurangan Energi Kronis)', 'category' => 'Tinggi', 'min_value' => 0.0, 'max_value' => 22.99],
+            ['parameter' => '≥ 23.5', 'score' => 1, 'label' => 'Normal', 'category' => 'Normal', 'min_value' => 23.5, 'max_value' => 99.0],
+            ['parameter' => '< 23.5', 'score' => 4, 'label' => 'KEK (Kekurangan Energi Kronis)', 'category' => 'Tinggi', 'min_value' => 0.0, 'max_value' => 23.49],
         ];
 
         foreach ($k3Scales as $scale) {
@@ -80,6 +82,7 @@ class CriteriaSeeder extends Seeder
                 $scale
             );
         }
+        CriterionScale::where('criterion_id', $k3->id)->whereNotIn('parameter', array_column($k3Scales, 'parameter'))->delete();
 
         // 4. K4: Usia
         $k4 = Criterion::updateOrCreate(
@@ -102,11 +105,12 @@ class CriteriaSeeder extends Seeder
                 $scale
             );
         }
+        CriterionScale::where('criterion_id', $k4->id)->whereNotIn('parameter', array_column($k4Scales, 'parameter'))->delete();
 
         // Default settings
         Setting::set('threshold_high', '0.80');
         Setting::set('threshold_medium', '0.60');
         Setting::set('nama_puskesmas', 'Puskesmas Kecamatan Taman Sari');
-        Setting::set('desa_list', json_encode(['Taman Sari', 'Maphar', 'Tangki', 'Mangga Besar', 'Keagungan', 'Glodok', 'Pinangsia', 'Krukut']));
+        Setting::set('desa_list', json_encode(['Parakancanggah', 'Cendana', 'Krandegan', 'Semarang', 'Sokayasa', 'Sokanandi']));
     }
 }

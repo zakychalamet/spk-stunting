@@ -19,7 +19,7 @@ class Index extends Component
         $this->thresholdMedium = (float) Setting::get('threshold_medium', '0.60');
 
         $desaArray = json_decode(Setting::get('desa_list', '[]'), true) ?: [
-            'Taman Sari', 'Maphar', 'Tangki', 'Mangga Besar', 'Keagungan', 'Glodok', 'Pinangsia', 'Krukut'
+            'Parakancanggah', 'Cendana', 'Krandegan', 'Semarang', 'Sokayasa', 'Sokanandi'
         ];
         $this->desaListText = implode(', ', $desaArray);
     }

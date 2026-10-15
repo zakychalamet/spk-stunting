@@ -13,6 +13,7 @@ class Comparison extends Component
     public array $pairwise = [];
     public ?array $calculationResult = null;
     public ?AhpCalculation $savedCalculation = null;
+    public ?array $notification = null;
 
     public function mount(AhpService $ahpService)
     {
@@ -128,16 +129,34 @@ class Comparison extends Component
         $this->savedCalculation = $ahpService->saveCalculation($result, $pairwiseInputs, $userId);
 
         if ($result['isConsistent']) {
-            session()->flash('success', 'Perhitungan AHP selesai. Matriks dinyatakan konsisten (CR = ' . $result['cr'] . ' ≤ 0.10) dan bobot tersimpan.');
+            $msg = 'Perhitungan AHP selesai. Matriks dinyatakan konsisten (CR = ' . $result['cr'] . ' ≤ 0.10) dan bobot tersimpan.';
+            session()->flash('success', $msg);
+            $this->notification = [
+                'type' => 'success',
+                'title' => 'AHP Berhasil Dihitung!',
+                'message' => $msg,
+            ];
         } else {
-            session()->flash('error', 'Perhitungan AHP selesai, namun perbandingan dinyatakan tidak konsisten (CR = ' . $result['cr'] . ' > 0.10). Silakan tinjau kembali nilai perbandingan.');
+            $msg = 'Perhitungan AHP selesai, namun perbandingan dinyatakan tidak konsisten (CR = ' . $result['cr'] . ' > 0.10). Silakan tinjau kembali nilai perbandingan.';
+            session()->flash('error', $msg);
+            $this->notification = [
+                'type' => 'error',
+                'title' => 'AHP Tidak Konsisten',
+                'message' => $msg,
+            ];
         }
+    }
+
+    public function dismissNotification()
+    {
+        $this->notification = null;
     }
 
     public function resetPairs()
     {
         $this->initializePairs();
         $this->calculationResult = null;
+        $this->notification = null;
         session()->flash('success', 'Nilai perbandingan telah diatur ulang ke posisi awal.');
     }
 

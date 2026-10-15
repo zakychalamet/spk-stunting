@@ -207,8 +207,8 @@
                                 class="w-full text-xs sm:text-sm pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50/60 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600/30 text-slate-800">
                             <option value="Normal (≥ 11)">Normal (≥ 11)</option>
                             <option value="Ringan (10 - 10,9)">Ringan (10 - 10,9)</option>
-                            <option value="Sedang (7 - 9,9)">Sedang (7 - 9,9)</option>
-                            <option value="Berat (< 7)">Berat (&lt; 7)</option>
+                            <option value="Sedang (8 - 9,9)">Sedang (8 - 9,9)</option>
+                            <option value="Berat (< 8)">Berat (&lt; 8)</option>
                         </select>
                     </div>
                     @error('status_anemia') <p class="text-xs text-rose-600 mt-1">{{ $message }}</p> @enderror

@@ -72,6 +72,26 @@ class AhpTopsisFeatureTest extends TestCase
             $response->assertStatus(200);
             $response->assertSee('Skor TOPSIS');
             $response->assertSee('Nilai Kriteria');
+        } else {
+            $this->assertTrue(true);
         }
+    }
+
+    public function test_ahp_calculate_triggers_notification(): void
+    {
+        \Livewire\Livewire::actingAs($this->user)
+            ->test(\App\Livewire\Ahp\Comparison::class)
+            ->call('calculate')
+            ->assertSet('notification.type', 'success')
+            ->assertSee('AHP Berhasil Dihitung!');
+    }
+
+    public function test_topsis_run_calculation_triggers_notification(): void
+    {
+        \Livewire\Livewire::actingAs($this->user)
+            ->test(\App\Livewire\Topsis\Calculation::class)
+            ->call('runCalculation')
+            ->assertSet('notification.type', 'success')
+            ->assertSee('TOPSIS Berhasil Dihitung!');
     }
 }

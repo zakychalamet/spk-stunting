@@ -49,7 +49,7 @@
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
             </div>
             <div>
-                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Skor TOPSIS ($V_i$)</span>
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Skor TOPSIS (V)</span>
                 <div class="text-2xl font-black text-slate-800 font-mono">{{ number_format($topsisResult->preference_score, 3) }}</div>
                 <span class="text-xs text-slate-400">Nilai preferensi kedekatan</span>
             </div>
@@ -83,7 +83,7 @@
                         <thead>
                             <tr class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-100">
                                 <th class="py-2.5 px-3">Kriteria</th>
-                                <th class="py-2.5 px-3">Nilai Aktual</th>
+                                <th class="py-2.5 px-3">Nilai</th>
                                 <th class="py-2.5 px-3 text-center">Skor</th>
                                 <th class="py-2.5 px-3 text-center">Keterangan</th>
                             </tr>
@@ -150,7 +150,7 @@
             </div>
         </div>
 
-        <!-- Right: Analisis Kedekatan Solusi matching PDF page 15 -->
+        <!-- Right: Analisis Kedekatan Solusi matching Gambar 2 -->
         <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs flex flex-col justify-between space-y-4">
             <div>
                 <h3 class="text-sm font-bold text-slate-800 border-b border-slate-100 pb-3">Analisis Kedekatan Solusi</h3>
@@ -159,32 +159,42 @@
                     Matriks kedekatan ini menunjukkan seberapa dekat profil pasien terhadap skenario terburuk (ideal negatif) dan skenario risiko tertinggi (ideal positif).
                 </p>
 
-                <!-- D+ Metric -->
-                <div class="mt-4 p-3.5 rounded-xl border border-slate-100 bg-slate-50 flex items-center justify-between">
-                    <div>
-                        <span class="text-xs sm:text-sm font-bold text-slate-700 block">JARAK KE SOLUSI IDEAL POSITIF ($D^+$)</span>
-                        <span class="text-xs text-slate-400 font-medium">Mendekati $D^+$ (kecil) berarti risiko tinggi</span>
+                @php
+                    $dPlus = (float) $topsisResult->d_plus;
+                    $dMinus = (float) $topsisResult->d_minus;
+                    $totalD = ($dPlus + $dMinus) ?: 1;
+                    $pctDPlus = min(100, max(6, round(($dPlus / $totalD) * 100)));
+                    $pctDMinus = min(100, max(6, round(($dMinus / $totalD) * 100)));
+                @endphp
+
+                <!-- D+ Metric matching Gambar 2 (Positif = Hijau) -->
+                <div class="mt-4 space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs sm:text-sm font-bold text-slate-900 tracking-wide">JARAK KE SOLUSI IDEAL POSITIF (D+)</span>
+                        <span class="text-sm sm:text-base font-black text-emerald-700 font-mono">{{ number_format($dPlus, 3) }}</span>
                     </div>
-                    <span class="text-base font-extrabold text-slate-800 font-mono">
-                        {{ number_format($topsisResult->d_plus, 4) }}
-                    </span>
+                    <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
+                        <div class="bg-emerald-700 h-full rounded-full transition-all duration-300" style="width: {{ $pctDPlus }}%"></div>
+                    </div>
+                    <p class="text-xs text-slate-500 italic">*Mendekati D+ (kecil) berarti risiko tinggi.</p>
                 </div>
 
-                <!-- D- Metric -->
-                <div class="mt-2.5 p-3.5 rounded-xl border border-slate-100 bg-slate-50 flex items-center justify-between">
-                    <div>
-                        <span class="text-xs sm:text-sm font-bold text-slate-700 block">JARAK KE SOLUSI IDEAL NEGATIF ($D^-$)</span>
-                        <span class="text-xs text-slate-400 font-medium">Menjauhi $D^-$ (besar) berarti risiko tinggi</span>
+                <!-- D- Metric matching Gambar 2 (Negatif = Merah) -->
+                <div class="mt-4 space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs sm:text-sm font-bold text-slate-900 tracking-wide">JARAK KE SOLUSI IDEAL NEGATIF (D-)</span>
+                        <span class="text-sm sm:text-base font-black text-red-700 font-mono">{{ number_format($dMinus, 3) }}</span>
                     </div>
-                    <span class="text-base font-extrabold text-slate-800 font-mono">
-                        {{ number_format($topsisResult->d_minus, 4) }}
-                    </span>
+                    <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
+                        <div class="bg-red-700 h-full rounded-full transition-all duration-300" style="width: {{ $pctDMinus }}%"></div>
+                    </div>
+                    <p class="text-xs text-slate-500 italic">*Menjauhi D- (besar) berarti risiko tinggi.</p>
                 </div>
             </div>
 
-            <!-- Callout conclusion box matching PDF page 15 -->
+            <!-- Callout conclusion box -->
             <div class="p-4 rounded-xl {{ $topsisResult->priority === 'Tinggi' ? 'bg-red-50 border border-red-100 text-red-900' : ($topsisResult->priority === 'Sedang' ? 'bg-amber-50 border border-amber-100 text-amber-900' : 'bg-emerald-50 border border-emerald-100 text-emerald-900') }} text-xs leading-relaxed">
-                Berdasarkan nilai $V$ (Preferensi) sebesar <strong>{{ number_format($topsisResult->preference_score, 3) }}</strong>, pasien ini teridentifikasi sebagai <strong>Prioritas {{ $topsisResult->priority }}</strong> untuk intervensi penanganan stunting.
+                Berdasarkan nilai V (Preferensi) sebesar <strong>{{ number_format($topsisResult->preference_score, 3) }}</strong>, pasien ini teridentifikasi sebagai <strong>Prioritas {{ $topsisResult->priority }}</strong> untuk intervensi penanganan stunting.
                 @if($topsisResult->recommendation)
                     <div class="mt-1 font-semibold">Rekomendasi Tindakan: {{ $topsisResult->recommendation }}.</div>
                 @endif

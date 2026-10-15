@@ -19,16 +19,16 @@ class TopsisService
     {
         // 1. Status Anemia (K1)
         // Skor risiko berdasarkan rentang status anemia dari data ibu hamil:
-        // Normal (>= 11) -> Skor 1 (Risiko Normal)
-        // Ringan (10 - 10.9) -> Skor 2 (Risiko Rendah)
-        // Sedang (7 - 9.9) -> Skor 3 (Risiko Sedang)
-        // Berat (< 7) -> Skor 4 (Risiko Tinggi)
+        // Normal (>= 11) -> Skor 1 (Normal)
+        // Ringan (10 - 10.9) -> Skor 2 (Rendah)
+        // Sedang (8 - 9.9) -> Skor 3 (Sedang)
+        // Berat (< 8) -> Skor 4 (Tinggi)
         $statusAnemia = strtolower(trim((string) $ibuHamil->status_anemia));
         $scoreAnemia = 1;
 
-        if (str_contains($statusAnemia, 'berat') || str_contains($statusAnemia, '< 7') || str_contains($statusAnemia, '<7')) {
+        if (str_contains($statusAnemia, 'berat') || str_contains($statusAnemia, '< 8') || str_contains($statusAnemia, '<8') || str_contains($statusAnemia, '< 7')) {
             $scoreAnemia = 4;
-        } elseif (str_contains($statusAnemia, 'sedang') || str_contains($statusAnemia, '7 - 9') || str_contains($statusAnemia, '7-9') || str_contains($statusAnemia, '7–9')) {
+        } elseif (str_contains($statusAnemia, 'sedang') || str_contains($statusAnemia, '8 - 9') || str_contains($statusAnemia, '8-9') || str_contains($statusAnemia, '8–9') || str_contains($statusAnemia, '7 - 9')) {
             $scoreAnemia = 3;
         } elseif (str_contains($statusAnemia, 'ringan') || str_contains($statusAnemia, '10 - 10') || str_contains($statusAnemia, '10-10') || str_contains($statusAnemia, '10–10')) {
             $scoreAnemia = 2;
@@ -42,7 +42,7 @@ class TopsisService
                     $scoreAnemia = 1;
                 } elseif ($hb >= 10.0) {
                     $scoreAnemia = 2;
-                } elseif ($hb >= 7.0) {
+                } elseif ($hb >= 8.0) {
                     $scoreAnemia = 3;
                 } else {
                     $scoreAnemia = 4;
@@ -51,26 +51,31 @@ class TopsisService
         }
 
         // 2. IMT (K2)
-        // 18.5 - 24.9 -> 1; 25.0 - 29.9 -> 2; 17.0 - 18.4 -> 3; <17.0 or >=30.0 -> 4
+        // 18.5 - 24.9 -> Skor 1 (Normal)
+        // 25.0 - 29.9 -> Skor 2 (Berat Badan Berlebih / Rendah)
+        // >= 30 -> Skor 3 (Obesitas / Sedang)
+        // < 18.5 -> Skor 4 (Kurus / Tinggi)
         $imt = (float) $ibuHamil->imt;
         $scoreImt = 1;
-        if ($imt >= 18.5 && $imt <= 24.99) {
+        if ($imt >= 18.5 && $imt < 25.0) {
             $scoreImt = 1;
-        } elseif ($imt >= 25.0 && $imt <= 29.99) {
+        } elseif ($imt >= 25.0 && $imt < 30.0) {
             $scoreImt = 2;
-        } elseif ($imt >= 17.0 && $imt < 18.5) {
+        } elseif ($imt >= 30.0) {
             $scoreImt = 3;
-        } elseif ($imt > 0 && ($imt < 17.0 || $imt >= 30.0)) {
+        } elseif ($imt > 0 && $imt < 18.5) {
             $scoreImt = 4;
         }
 
         // 3. LILA (K3)
-        // >= 23 -> 1; < 23 -> 4
+        // >= 23.5 -> Skor 1 (Normal)
+        // < 23.5 -> Skor 4 (KEK / Tinggi)
         $lila = (float) $ibuHamil->lila;
-        $scoreLila = ($lila > 0 && $lila < 23.0) ? 4 : 1;
+        $scoreLila = ($lila > 0 && $lila < 23.5) ? 4 : 1;
 
         // 4. Usia (K4)
-        // 20 - 35 -> 1; < 20 or > 35 -> 4
+        // 20 - 35 -> Skor 1 (Normal)
+        // < 20 or > 35 -> Skor 4 (Tinggi)
         $usia = $ibuHamil->usia;
         $scoreUsia = ($usia < 20 || $usia > 35) ? 4 : 1;
 
@@ -305,6 +310,12 @@ class TopsisService
 
         DB::transaction(function () use ($calculationResult) {
             $ahpId = $calculationResult['ahpCalculation'] ? $calculationResult['ahpCalculation']->id : null;
+            $calculatedIbuIds = collect($calculationResult['results'])->pluck('ibu_hamil_id')->all();
+
+            // Clean up any stale results for patients no longer in calculation
+            if (!empty($calculatedIbuIds)) {
+                TopsisResult::whereNotIn('ibu_hamil_id', $calculatedIbuIds)->delete();
+            }
 
             foreach ($calculationResult['results'] as $row) {
                 TopsisResult::updateOrCreate(

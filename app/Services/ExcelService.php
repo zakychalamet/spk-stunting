@@ -37,11 +37,9 @@ class ExcelService
             'Usia Kehamilan (Minggu)',
             'Status Kehamilan',
             'Status Anemia',
-            'Kadar Hb',
             'IMT',
             'LILA',
             'Berat Badan Sebelum Hamil (kg)',
-            'Tinggi Badan (cm)',
         ];
 
         return response()->stream(function () use ($columns, $items) {
@@ -62,11 +60,9 @@ class ExcelService
                     $row->usia_kehamilan_minggu,
                     $row->status_kehamilan,
                     $row->status_anemia,
-                    $row->kadar_hb,
                     $row->imt,
                     $row->lila,
                     $row->berat_badan_sebelum_hamil,
-                    $row->tinggi_badan,
                 ], ';');
             }
 
@@ -95,11 +91,9 @@ class ExcelService
             'Usia Kehamilan (Minggu)',
             'Status Kehamilan',
             'Status Anemia',
-            'Kadar Hb',
             'IMT',
             'LILA',
             'Berat Badan Sebelum Hamil (kg)',
-            'Tinggi Badan (cm)',
         ];
 
         return response()->stream(function () use ($columns) {
@@ -109,25 +103,63 @@ class ExcelService
 
             // Example row
             fputcsv($file, [
-                'P-2025-001',
+                'P-2026-01',
                 'Contoh Nama Pasien',
                 '1995-05-15',
                 '081234567890',
-                'Taman Sari',
-                '2025-01-10',
-                '2025-10-17',
+                'Parakancanggah',
+                '2026-01-10',
+                '2026-10-17',
                 '12',
                 'Trimester I',
                 'Anemia Ringan',
-                '10.2',
                 '21.5',
                 '23.5',
                 '50.0',
-                '155.0',
             ], ';');
 
             fclose($file);
         }, 200, $headers);
+    }
+
+    /**
+     * Import Ibu Hamil from uploaded file
+     */
+    /**
+     * Parse date string supporting DD/MM/YYYY, DD-MM-YYYY, YYYY-MM-DD, etc.
+     */
+    public function parseDate(?string $value): ?string
+    {
+        if (empty($value)) {
+            return null;
+        }
+        $value = trim($value);
+
+        // Format DD/MM/YYYY or DD-MM-YYYY
+        if (preg_match('/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/', $value, $m)) {
+            $day = (int) $m[1];
+            $month = (int) $m[2];
+            $year = (int) $m[3];
+            if (checkdate($month, $day, $year)) {
+                return sprintf('%04d-%02d-%02d', $year, $month, $day);
+            }
+        }
+
+        // Format YYYY-MM-DD or YYYY/MM/DD
+        if (preg_match('/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/', $value, $m)) {
+            $year = (int) $m[1];
+            $month = (int) $m[2];
+            $day = (int) $m[3];
+            if (checkdate($month, $day, $year)) {
+                return sprintf('%04d-%02d-%02d', $year, $month, $day);
+            }
+        }
+
+        try {
+            return Carbon::parse($value)->format('Y-m-d');
+        } catch (\Throwable $e) {
+            return null;
+        }
     }
 
     /**
@@ -157,6 +189,60 @@ class ExcelService
             return ['success' => false, 'message' => 'File kosong atau format salah.'];
         }
 
+        // Map column headers dynamically
+        $map = [];
+        foreach ($header as $idx => $col) {
+            $colLower = strtolower(trim($col));
+            $colClean = preg_replace('/[^a-z0-9]/', '', $colLower);
+
+            if (str_contains($colClean, 'hpht')) {
+                $map['hpht'] = $idx;
+            } elseif (str_contains($colClean, 'hpl')) {
+                $map['hpl'] = $idx;
+            } elseif (str_contains($colClean, 'usiakehamilan') || str_contains($colClean, 'minggukehamilan')) {
+                $map['usia_kehamilan_minggu'] = $idx;
+            } elseif (str_contains($colClean, 'statuskehamilan') || str_contains($colClean, 'trimester')) {
+                $map['status_kehamilan'] = $idx;
+            } elseif (str_contains($colClean, 'kode') || $colClean === 'id' || str_contains($colClean, 'kodeibu')) {
+                $map['kode'] = $idx;
+            } elseif (str_contains($colClean, 'nama')) {
+                $map['nama'] = $idx;
+            } elseif (str_contains($colClean, 'tanggallahir') || str_contains($colClean, 'tgllahir') || str_contains($colClean, 'lahir')) {
+                $map['tanggal_lahir'] = $idx;
+            } elseif (str_contains($colClean, 'telepon') || str_contains($colClean, 'telp') || str_contains($colClean, 'kontak') || str_contains($colClean, 'wa') || $colClean === 'hp' || str_contains($colClean, 'nohp')) {
+                $map['nomor_telepon'] = $idx;
+            } elseif (str_contains($colClean, 'desa') || str_contains($colClean, 'kelurahan') || str_contains($colClean, 'alamat')) {
+                $map['desa_kelurahan'] = $idx;
+            } elseif (str_contains($colClean, 'anemia')) {
+                $map['status_anemia'] = $idx;
+            } elseif (str_contains($colClean, 'kadarhb') || $colClean === 'hb' || str_contains($colClean, 'hemoglobin')) {
+                $map['kadar_hb'] = $idx;
+            } elseif (str_contains($colClean, 'imt') || str_contains($colClean, 'bmi')) {
+                $map['imt'] = $idx;
+            } elseif (str_contains($colClean, 'lila')) {
+                $map['lila'] = $idx;
+            } elseif (str_contains($colClean, 'berat') || str_contains($colClean, 'bb')) {
+                $map['berat_badan_sebelum_hamil'] = $idx;
+            } elseif (str_contains($colClean, 'tinggi') || str_contains($colClean, 'tb')) {
+                $map['tinggi_badan'] = $idx;
+            }
+        }
+
+        // Fallback default index positions if no headers matched
+        if (!isset($map['nama'])) {
+            $map['kode'] = 0;
+            $map['nama'] = 1;
+            $map['tanggal_lahir'] = 2;
+            $map['nomor_telepon'] = 3;
+            $map['desa_kelurahan'] = 4;
+            $map['hpht'] = 5;
+            $map['status_anemia'] = 6;
+            $map['kadar_hb'] = 7;
+            $map['imt'] = 8;
+            $map['lila'] = 9;
+            $map['berat_badan_sebelum_hamil'] = 10;
+        }
+
         $countSuccess = 0;
         $errors = [];
         $rowNumber = 1;
@@ -167,39 +253,94 @@ class ExcelService
                 continue; // Skip blank lines
             }
 
-            $nama = trim($row[1] ?? '');
+            $nama = trim($row[$map['nama'] ?? 1] ?? '');
             if (empty($nama)) {
                 $errors[] = "Baris $rowNumber: Nama lengkap wajib diisi.";
                 continue;
             }
 
             try {
-                $kode = !empty(trim($row[0] ?? '')) ? trim($row[0]) : null;
-                $tglLahir = !empty(trim($row[2] ?? '')) ? Carbon::parse(trim($row[2]))->format('Y-m-d') : null;
-                $hpht = !empty(trim($row[5] ?? '')) ? Carbon::parse(trim($row[5]))->format('Y-m-d') : null;
-                $hpl = !empty(trim($row[6] ?? '')) ? Carbon::parse(trim($row[6]))->format('Y-m-d') : ($hpht ? Carbon::parse($hpht)->addDays(280)->format('Y-m-d') : null);
+                $kode = isset($map['kode']) && !empty(trim($row[$map['kode']] ?? '')) ? trim($row[$map['kode']]) : null;
+                $tglLahirRaw = isset($map['tanggal_lahir']) ? trim($row[$map['tanggal_lahir']] ?? '') : '';
+                $hphtRaw = isset($map['hpht']) ? trim($row[$map['hpht']] ?? '') : '';
+
+                $tglLahir = $this->parseDate($tglLahirRaw);
+                $hpht = $this->parseDate($hphtRaw);
 
                 if (!$tglLahir || !$hpht) {
-                    $errors[] = "Baris $rowNumber: Format tanggal lahir atau HPHT tidak valid.";
+                    $errors[] = "Baris $rowNumber: Format tanggal lahir atau HPHT tidak valid ('$tglLahirRaw', '$hphtRaw').";
                     continue;
                 }
+
+                // HPL: from column or calculate HPHT + 280 days
+                $hplRaw = isset($map['hpl']) ? trim($row[$map['hpl']] ?? '') : '';
+                $hpl = $this->parseDate($hplRaw) ?: Carbon::parse($hpht)->addDays(280)->format('Y-m-d');
+
+                // Usia Kehamilan (Minggu)
+                if (isset($map['usia_kehamilan_minggu']) && is_numeric(trim($row[$map['usia_kehamilan_minggu']] ?? ''))) {
+                    $usiaMinggu = (int) trim($row[$map['usia_kehamilan_minggu']]);
+                } else {
+                    $usiaMinggu = max(1, (int) Carbon::parse($hpht)->diffInWeeks(now()));
+                }
+
+                // Status Kehamilan
+                if (isset($map['status_kehamilan']) && !empty(trim($row[$map['status_kehamilan']] ?? ''))) {
+                    $statusKehamilan = trim($row[$map['status_kehamilan']]);
+                } else {
+                    if ($usiaMinggu <= 12) {
+                        $statusKehamilan = 'Trimester I';
+                    } elseif ($usiaMinggu <= 27) {
+                        $statusKehamilan = 'Trimester II';
+                    } else {
+                        $statusKehamilan = 'Trimester III';
+                    }
+                }
+
+                // Status Anemia
+                $statusAnemia = isset($map['status_anemia']) ? trim($row[$map['status_anemia']] ?? '') : 'Normal (≥ 11)';
+                if (empty($statusAnemia)) {
+                    $statusAnemia = 'Normal (≥ 11)';
+                }
+
+                // Kadar Hb
+                $kadarHb = isset($map['kadar_hb']) && !empty($row[$map['kadar_hb']]) 
+                    ? (float) str_replace(',', '.', trim($row[$map['kadar_hb']])) 
+                    : null;
+
+                // IMT
+                $imt = isset($map['imt']) && !empty($row[$map['imt']]) 
+                    ? (float) str_replace(',', '.', trim($row[$map['imt']])) 
+                    : 0;
+
+                // LILA
+                $lila = isset($map['lila']) && !empty($row[$map['lila']]) 
+                    ? (float) str_replace(',', '.', trim($row[$map['lila']])) 
+                    : 0;
+
+                // Berat Badan Sebelum Hamil
+                $bb = isset($map['berat_badan_sebelum_hamil']) && !empty($row[$map['berat_badan_sebelum_hamil']]) 
+                    ? (float) str_replace(',', '.', trim($row[$map['berat_badan_sebelum_hamil']])) 
+                    : null;
 
                 $data = [
                     'nama' => $nama,
                     'tanggal_lahir' => $tglLahir,
-                    'nomor_telepon' => trim($row[3] ?? ''),
-                    'desa_kelurahan' => trim($row[4] ?? ''),
+                    'nomor_telepon' => isset($map['nomor_telepon']) ? trim($row[$map['nomor_telepon']] ?? '') : '',
+                    'desa_kelurahan' => isset($map['desa_kelurahan']) ? trim($row[$map['desa_kelurahan']] ?? '') : '',
                     'hpht' => $hpht,
                     'hpl' => $hpl,
-                    'usia_kehamilan_minggu' => (int) ($row[7] ?? 0),
-                    'status_kehamilan' => trim($row[8] ?? 'Trimester I'),
-                    'status_anemia' => trim($row[9] ?? 'Normal'),
-                    'kadar_hb' => !empty($row[10]) ? (float) str_replace(',', '.', $row[10]) : null,
-                    'imt' => !empty($row[11]) ? (float) str_replace(',', '.', $row[11]) : 0,
-                    'lila' => !empty($row[12]) ? (float) str_replace(',', '.', $row[12]) : 0,
-                    'berat_badan_sebelum_hamil' => !empty($row[13]) ? (float) str_replace(',', '.', $row[13]) : null,
-                    'tinggi_badan' => !empty($row[14]) ? (float) str_replace(',', '.', $row[14]) : null,
+                    'usia_kehamilan_minggu' => $usiaMinggu,
+                    'status_kehamilan' => $statusKehamilan,
+                    'status_anemia' => $statusAnemia,
+                    'kadar_hb' => $kadarHb,
+                    'imt' => $imt,
+                    'lila' => $lila,
+                    'berat_badan_sebelum_hamil' => $bb,
                 ];
+
+                if (isset($map['tinggi_badan']) && !empty($row[$map['tinggi_badan']])) {
+                    $data['tinggi_badan'] = (float) str_replace(',', '.', trim($row[$map['tinggi_badan']]));
+                }
 
                 if ($kode) {
                     IbuHamil::updateOrCreate(['kode_ibu_hamil' => $kode], $data);
