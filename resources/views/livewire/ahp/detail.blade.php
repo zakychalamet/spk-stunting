@@ -315,26 +315,172 @@
                 </div>
             </div>
 
+            <!-- Accordion formula Step 4 (Detail Uji Konsistensi) -->
+            <div class="pt-2 border-t border-slate-100">
+                <button type="button" wire:click="toggleStep(4)" class="w-full flex items-center justify-between text-xs font-semibold text-slate-500 hover:text-emerald-700 transition py-1">
+                    <span>Lihat Detail Perhitungan Uji Konsistensi</span>
+                    <span>{{ $showStep4 ? '▲ Sembunyikan' : '▼ Tampilkan' }}</span>
+                </button>
+                @if($showStep4)
+                    <div class="mt-3 p-4 bg-slate-50 rounded-xl text-xs text-slate-600 font-mono space-y-4 leading-relaxed">
+                        @php
+                            $n = count($criteria);
+                            $awList = [];
+                            $totalLambda = 0;
+                            foreach($criteria as $row) {
+                                $yi = 0;
+                                foreach($criteria as $col) {
+                                    $a_val = (float)($detailData['matrix'][$row->id][$col->id] ?? 1);
+                                    $w_val = (float)($detailData['weights'][$col->id] ?? 0);
+                                    $yi += $a_val * $w_val;
+                                }
+                                $awList[$row->id] = $yi;
+                                $totalLambda += ($detailData['lambdaList'][$row->id] ?? 0);
+                            }
+                        @endphp
+
+                        <!-- 1. Vektor Bobot (A * w) -->
+                        <div class="space-y-2">
+                            <div class="font-bold text-slate-800 font-sans text-xs">
+                                1. Perkalian Matriks dengan Vektor Bobot: (Aw)<sub>i</sub> = &sum; (a<sub>ij</sub> &times; w<sub>j</sub>)
+                            </div>
+                            <div class="flex flex-col gap-2">
+                                @foreach($criteria as $rowIndex => $row)
+                                    @php
+                                        $multParts = [];
+                                        foreach($criteria as $colIndex => $col) {
+                                            $a_val = (float)($detailData['matrix'][$row->id][$col->id] ?? 1);
+                                            $a_str = ($a_val < 1) ? ('1/' . round(1/$a_val)) : round($a_val);
+                                            $w_val = number_format($detailData['weights'][$col->id] ?? 0, 4);
+                                            $multParts[] = "({$a_str} &times; {$w_val})";
+                                        }
+                                        $awVal = $awList[$row->id] ?? 0;
+                                    @endphp
+                                    <div class="bg-white p-3 rounded-xl border border-slate-200/60 shadow-2xs space-y-1">
+                                        <div class="font-bold text-slate-800 font-sans text-xs">
+                                            {{ $row->code }} - {{ $row->name }} ((Aw)<sub>{{ $rowIndex + 1 }}</sub>):
+                                        </div>
+                                        <div class="text-slate-500 overflow-x-auto">
+                                            (Aw)<sub>{{ $rowIndex + 1 }}</sub> = {!! implode(' + ', $multParts) !!}
+                                        </div>
+                                        <div>
+                                            = <strong class="text-slate-800">{{ number_format($awVal, 4) }}</strong>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <!-- 2. Nilai Eigen Tiap Baris (lambda_i) -->
+                        <div class="space-y-2 pt-2 border-t border-slate-200/60">
+                            <div class="font-bold text-slate-800 font-sans text-xs">
+                                2. Nilai Rasio Konsistensi Tiap Kriteria: &lambda;<sub>i</sub> = (Aw)<sub>i</sub> / w<sub>i</sub>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                @foreach($criteria as $rowIndex => $row)
+                                    @php
+                                        $awVal = $awList[$row->id] ?? 0;
+                                        $wVal = $detailData['weights'][$row->id] ?? 0;
+                                        $lVal = $detailData['lambdaList'][$row->id] ?? 0;
+                                    @endphp
+                                    <div class="bg-white p-3 rounded-xl border border-slate-200/60 shadow-2xs space-y-1">
+                                        <div class="font-bold text-slate-800 font-sans text-xs">
+                                            {{ $row->code }} - {{ $row->name }} (&lambda;<sub>{{ $rowIndex + 1 }}</sub>):
+                                        </div>
+                                        <div>
+                                            &lambda;<sub>{{ $rowIndex + 1 }}</sub> = {{ number_format($awVal, 4) }} / {{ number_format($wVal, 4) }} = <strong class="text-emerald-800">{{ number_format($lVal, 4) }}</strong>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <!-- 3. Lambda Max -->
+                        <div class="space-y-1.5 pt-2 border-t border-slate-200/60">
+                            <div class="font-bold text-slate-800 font-sans text-xs">
+                                3. Nilai Eigen Maksimum (&lambda;<sub>max</sub>):
+                            </div>
+                            <div class="bg-white p-3 rounded-xl border border-slate-200/60 shadow-2xs space-y-1">
+                                @php
+                                    $lParts = [];
+                                    foreach($criteria as $row) {
+                                        $lParts[] = number_format($detailData['lambdaList'][$row->id] ?? 0, 4);
+                                    }
+                                @endphp
+                                <div class="text-slate-500 overflow-x-auto">
+                                    &lambda;<sub>max</sub> = ({{ implode(' + ', $lParts) }}) / {{ $n }}
+                                </div>
+                                <div>
+                                    &lambda;<sub>max</sub> = {{ number_format($totalLambda, 4) }} / {{ $n }} = <strong class="text-emerald-800">{{ number_format($detailData['lambdaMax'] ?? 0, 4) }}</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4. CI & CR -->
+                        <div class="space-y-1.5 pt-2 border-t border-slate-200/60">
+                            <div class="font-bold text-slate-800 font-sans text-xs">
+                                4. Consistency Index (CI) &amp; Consistency Ratio (CR):
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <div class="bg-white p-3 rounded-xl border border-slate-200/60 shadow-2xs space-y-1">
+                                    <div class="font-bold text-slate-800 font-sans text-xs">Consistency Index (CI):</div>
+                                    <div class="text-slate-500">CI = (&lambda;<sub>max</sub> - n) / (n - 1)</div>
+                                    <div>
+                                        CI = ({{ number_format($detailData['lambdaMax'] ?? 0, 4) }} - {{ $n }}) / ({{ $n }} - 1)<br>
+                                        = {{ number_format(($detailData['lambdaMax'] ?? 0) - $n, 4) }} / {{ $n - 1 }} = <strong class="text-emerald-800">{{ number_format($detailData['ci'] ?? 0, 4) }}</strong>
+                                    </div>
+                                </div>
+                                <div class="bg-white p-3 rounded-xl border border-slate-200/60 shadow-2xs space-y-1">
+                                    <div class="font-bold text-slate-800 font-sans text-xs">Consistency Ratio (CR):</div>
+                                    <div class="text-slate-500">CR = CI / RI (RI untuk n={{ $n }} adalah {{ $detailData['ri'] ?? 0.90 }})</div>
+                                    <div>
+                                        CR = {{ number_format($detailData['ci'] ?? 0, 4) }} / {{ $detailData['ri'] ?? 0.90 }}<br>
+                                        = <strong class="{{ ($detailData['isConsistent'] ?? true) ? 'text-emerald-800' : 'text-red-700' }}">{{ number_format($detailData['cr'] ?? 0, 4) }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                @endif
+            </div>
+
             <!-- Status Banner matching PDF Page 7 & 9 -->
             @if($detailData['isConsistent'] ?? true)
-                <div class="p-5 rounded-2xl bg-emerald-800 text-white space-y-1.5 shadow-sm">
-                    <div class="flex items-center gap-2 font-bold text-sm">
-                        <svg class="w-5 h-5 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                        <span>Konsistensi Diterima</span>
+                <div class="rounded-2xl bg-[#085a3c] text-white flex overflow-hidden shadow-sm items-stretch">
+                    <div class="bg-[#064830] px-5 flex items-center justify-center shrink-0">
+                        <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-xs">
+                            <svg class="w-6 h-6 text-[#085a3c]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
                     </div>
-                    <p class="text-xs text-emerald-100 leading-relaxed pl-7">
-                        Nilai Consistency Ratio (CR) sebesar <strong>{{ number_format($detailData['cr'] ?? 0, 4) }}</strong> berada di bawah syarat &le; 0,10. Hasil perbandingan berpasangan dinyatakan konsisten dan bobot kriteria dapat digunakan pada proses penilaian risiko stunting.
-                    </p>
+                    <div class="p-4 sm:p-5 space-y-1">
+                        <div class="font-bold text-sm tracking-wide">
+                            Konsistensi Diterima
+                        </div>
+                        <p class="text-xs text-emerald-50 leading-relaxed">
+                            Nilai Consistency Ratio (CR) sebesar <strong>{{ number_format($detailData['cr'] ?? 0, 4) }}</strong> berada di bawah syarat &le; 0,10. Hasil perbandingan berpasangan dinyatakan konsisten dan bobot kriteria dapat digunakan pada proses penilaian risiko stunting.
+                        </p>
+                    </div>
                 </div>
             @else
-                <div class="p-5 rounded-2xl bg-red-800 text-white space-y-1.5 shadow-sm">
-                    <div class="flex items-center gap-2 font-bold text-sm">
-                        <svg class="w-5 h-5 text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                        <span>Konsistensi Tidak Diterima</span>
+                <div class="rounded-2xl bg-red-700 text-white flex overflow-hidden shadow-sm items-stretch">
+                    <div class="bg-red-800 px-5 flex items-center justify-center shrink-0">
+                        <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-xs">
+                            <svg class="w-6 h-6 text-red-700" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </div>
                     </div>
-                    <p class="text-xs text-red-100 leading-relaxed pl-7">
-                        Nilai Consistency Ratio (CR) sebesar <strong>{{ number_format($detailData['cr'] ?? 0, 4) }} &gt; 0,10</strong>. Hasil perbandingan berpasangan dinyatakan tidak konsisten dan perlu diperiksa kembali sebelum digunakan dalam proses penilaian risiko.
-                    </p>
+                    <div class="p-4 sm:p-5 space-y-1">
+                        <div class="font-bold text-sm tracking-wide">
+                            Konsistensi Tidak Diterima
+                        </div>
+                        <p class="text-xs text-red-50 leading-relaxed">
+                            Nilai Consistency Ratio (CR) sebesar <strong>{{ number_format($detailData['cr'] ?? 0, 4) }} &gt; 0,10</strong>. Hasil perbandingan berpasangan dinyatakan tidak konsisten dan perlu diperiksa kembali sebelum digunakan dalam proses penilaian risiko.
+                        </p>
+                    </div>
                 </div>
             @endif
         </div>

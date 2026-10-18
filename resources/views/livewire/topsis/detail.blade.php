@@ -89,19 +89,74 @@
                 </table>
             </div>
 
-            <!-- Accordion formula -->
+            <!-- Accordion formula Step 2 -->
             <div class="pt-2 border-t border-slate-100">
-                <button type="button" wire:click="toggleFormula" class="w-full flex items-center justify-between text-xs font-semibold text-slate-500 hover:text-emerald-700 transition py-1">
-                    <span>Lihat Detail Perhitungan Pembagi Normalisasi (S<sub>j</sub>)</span>
+                <button type="button" wire:click="toggleStep(2)" class="w-full flex items-center justify-between text-xs font-semibold text-slate-500 hover:text-emerald-700 transition py-1">
+                    <span>Lihat Detail Perhitungan Normalisasi &amp; Pembagi (S<sub>j</sub>)</span>
                     <span>{{ $showStep2Formula ? '▲ Sembunyikan' : '▼ Tampilkan' }}</span>
                 </button>
                 @if($showStep2Formula)
-                    <div class="mt-3 p-4 bg-slate-50 rounded-xl text-xs text-slate-600 font-mono space-y-2 leading-relaxed">
-                        @foreach($topsisData['criterionCodes'] as $code)
-                            <div>
-                                Pembagi <strong>{{ $code }}</strong>: &radic;(&sum; x<sub>kj</sub>&sup2;) = <strong>{{ number_format($topsisData['divisors'][$code], 4) }}</strong>
+                    <div class="mt-3 p-4 bg-slate-50 rounded-xl text-xs text-slate-600 font-mono space-y-4 leading-relaxed">
+                        <!-- Pembagi Sj -->
+                        <div class="space-y-2">
+                            <div class="font-bold text-slate-800 font-sans text-xs">
+                                1. Nilai Pembagi Kriteria (S<sub>j</sub> = &radic;&sum; x<sub>ij</sub>&sup2;):
                             </div>
-                        @endforeach
+                            <div class="flex flex-col gap-2">
+                                @foreach($topsisData['criterionCodes'] as $code)
+                                    @php
+                                        $criterionObj = $criteria->firstWhere('code', $code);
+                                        $critName = $criterionObj ? $criterionObj->name : $code;
+                                        $sqParts = [];
+                                        $sumSq = 0;
+                                        foreach($topsisData['ibuHamilCollection'] as $item) {
+                                            $val = $topsisData['decisionMatrix'][$item->id][$code] ?? 1;
+                                            $sqParts[] = "{$val}&sup2;";
+                                            $sumSq += ($val * $val);
+                                        }
+                                        $div = $topsisData['divisors'][$code] ?? 1;
+                                    @endphp
+                                    <div class="bg-white p-3 rounded-xl border border-slate-200/60 shadow-2xs space-y-1">
+                                        <div class="font-bold text-slate-800 font-sans text-xs">
+                                            {{ $code }} - {{ $critName }} (S<sub>{{ $code }}</sub>):
+                                        </div>
+                                        <div class="text-slate-500 overflow-x-auto">
+                                            S<sub>{{ $code }}</sub> = &radic;({!! implode(' + ', $sqParts) !!})
+                                        </div>
+                                        <div>
+                                            = &radic;({{ $sumSq }}) = <strong class="text-emerald-800">{{ number_format($div, 4) }}</strong>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <!-- Contoh / Rincian r_ij -->
+                        <div class="space-y-2 pt-2 border-t border-slate-200/60">
+                            <div class="font-bold text-slate-800 font-sans text-xs">
+                                2. Perhitungan Normalisasi Elemen (r<sub>ij</sub> = x<sub>ij</sub> / S<sub>j</sub>):
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                @foreach($topsisData['ibuHamilCollection'] as $item)
+                                    <div class="bg-white p-3 rounded-xl border border-slate-200/60 shadow-2xs space-y-1">
+                                        <div class="font-bold text-slate-800 font-sans text-xs border-b border-slate-100 pb-1">
+                                            {{ $item->nama }}
+                                        </div>
+                                        @foreach($topsisData['criterionCodes'] as $code)
+                                            @php
+                                                $x = $topsisData['decisionMatrix'][$item->id][$code] ?? 1;
+                                                $div = $topsisData['divisors'][$code] ?? 1;
+                                                $r = $topsisData['normalizedMatrix'][$item->id][$code] ?? 0;
+                                            @endphp
+                                            <div class="text-slate-600 flex justify-between items-center text-[11px]">
+                                                <span>r({{ $code }}): {{ $x }} / {{ number_format($div, 4) }}</span>
+                                                <strong class="text-emerald-800 font-mono">{{ number_format($r, 6) }}</strong>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
                     </div>
                 @endif
             </div>
@@ -139,6 +194,41 @@
                         @endforeach
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Accordion formula Step 3 -->
+            <div class="pt-2 border-t border-slate-100">
+                <button type="button" wire:click="toggleStep(3)" class="w-full flex items-center justify-between text-xs font-semibold text-slate-500 hover:text-emerald-700 transition py-1">
+                    <span>Lihat Detail Perhitungan Perkalian Bobot (v<sub>ij</sub>)</span>
+                    <span>{{ $showStep3Formula ? '▲ Sembunyikan' : '▼ Tampilkan' }}</span>
+                </button>
+                @if($showStep3Formula)
+                    <div class="mt-3 p-4 bg-slate-50 rounded-xl text-xs text-slate-600 font-mono space-y-3 leading-relaxed">
+                        <div class="font-bold text-slate-800 font-sans text-xs">
+                            Formula: v<sub>ij</sub> = w<sub>j</sub> &times; r<sub>ij</sub>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            @foreach($topsisData['ibuHamilCollection'] as $item)
+                                <div class="bg-white p-3 rounded-xl border border-slate-200/60 shadow-2xs space-y-1">
+                                    <div class="font-bold text-slate-800 font-sans text-xs border-b border-slate-100 pb-1">
+                                        {{ $item->nama }}
+                                    </div>
+                                    @foreach($topsisData['criterionCodes'] as $code)
+                                        @php
+                                            $w = $topsisData['weights'][$code] ?? 0;
+                                            $r = $topsisData['normalizedMatrix'][$item->id][$code] ?? 0;
+                                            $v = $topsisData['weightedMatrix'][$item->id][$code] ?? 0;
+                                        @endphp
+                                        <div class="text-slate-600 flex justify-between items-center text-[11px]">
+                                            <span>v({{ $code }}): {{ number_format($w, 4) }} &times; {{ number_format($r, 4) }}</span>
+                                            <strong class="text-emerald-800 font-mono">{{ number_format($v, 6) }}</strong>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
 
@@ -182,6 +272,53 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Accordion formula Step 4 -->
+            <div class="pt-2 border-t border-slate-100">
+                <button type="button" wire:click="toggleStep(4)" class="w-full flex items-center justify-between text-xs font-semibold text-slate-500 hover:text-emerald-700 transition py-1">
+                    <span>Lihat Penjelasan Penentuan Solusi Ideal (A+ / A-)</span>
+                    <span>{{ $showStep4Formula ? '▲ Sembunyikan' : '▼ Tampilkan' }}</span>
+                </button>
+                @if($showStep4Formula)
+                    <div class="mt-3 p-4 bg-slate-50 rounded-xl text-xs text-slate-600 font-mono space-y-3 leading-relaxed">
+                        <div class="text-slate-600 font-sans text-xs">
+                            Karena semua kriteria berorientasi pada <strong>risiko stunting (benefit/makin besar skor makin berisiko)</strong>:
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div class="bg-white p-3 rounded-xl border border-slate-200/60 shadow-2xs space-y-1.5">
+                                <div class="font-bold text-emerald-800 font-sans text-xs">
+                                    Solusi Ideal Positif (A<sup>+</sup> = max(v<sub>ij</sub>)):
+                                </div>
+                                @foreach($topsisData['criterionCodes'] as $code)
+                                    @php
+                                        $criterionObj = $criteria->firstWhere('code', $code);
+                                        $critName = $criterionObj ? $criterionObj->name : $code;
+                                    @endphp
+                                    <div class="text-[11px] flex justify-between items-center">
+                                        <span>{{ $code }} ({{ $critName }}):</span>
+                                        <strong class="text-emerald-800">{{ number_format($topsisData['idealPositive'][$code], 6) }}</strong>
+                                    </div>
+                                @endforeach
+                            </div>
+                            <div class="bg-white p-3 rounded-xl border border-slate-200/60 shadow-2xs space-y-1.5">
+                                <div class="font-bold text-rose-800 font-sans text-xs">
+                                    Solusi Ideal Negatif (A<sup>-</sup> = min(v<sub>ij</sub>)):
+                                </div>
+                                @foreach($topsisData['criterionCodes'] as $code)
+                                    @php
+                                        $criterionObj = $criteria->firstWhere('code', $code);
+                                        $critName = $criterionObj ? $criterionObj->name : $code;
+                                    @endphp
+                                    <div class="text-[11px] flex justify-between items-center">
+                                        <span>{{ $code }} ({{ $critName }}):</span>
+                                        <strong class="text-rose-800">{{ number_format($topsisData['idealNegative'][$code], 6) }}</strong>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            </div>
         </div>
 
         <!-- 5. JARAK SOLUSI IDEAL POSITIF (D+) DAN NEGATIF (D-) -->
@@ -212,6 +349,60 @@
                         @endforeach
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Accordion formula Step 5 -->
+            <div class="pt-2 border-t border-slate-100">
+                <button type="button" wire:click="toggleStep(5)" class="w-full flex items-center justify-between text-xs font-semibold text-slate-500 hover:text-emerald-700 transition py-1">
+                    <span>Lihat Detail Perhitungan Jarak Euclidean (D+ &amp; D-)</span>
+                    <span>{{ $showStep5Formula ? '▲ Sembunyikan' : '▼ Tampilkan' }}</span>
+                </button>
+                @if($showStep5Formula)
+                    <div class="mt-3 p-4 bg-slate-50 rounded-xl text-xs text-slate-600 font-mono space-y-3 leading-relaxed">
+                        <div class="text-slate-600 font-sans text-xs">
+                            Formula Jarak Euclidean: D<sub>i</sub><sup>+</sup> = &radic;&sum;(v<sub>ij</sub> - v<sub>j</sub><sup>+</sup>)&sup2; dan D<sub>i</sub><sup>-</sup> = &radic;&sum;(v<sub>ij</sub> - v<sub>j</sub><sup>-</sup>)&sup2;
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            @foreach($topsisData['ibuHamilCollection'] as $item)
+                                @php
+                                    $dPlusParts = [];
+                                    $dMinusParts = [];
+                                    foreach($topsisData['criterionCodes'] as $code) {
+                                        $v = $topsisData['weightedMatrix'][$item->id][$code] ?? 0;
+                                        $vPlus = $topsisData['idealPositive'][$code] ?? 0;
+                                        $vMinus = $topsisData['idealNegative'][$code] ?? 0;
+
+                                        $dPlusParts[] = "(" . number_format($v, 4) . " - " . number_format($vPlus, 4) . ")&sup2;";
+                                        $dMinusParts[] = "(" . number_format($v, 4) . " - " . number_format($vMinus, 4) . ")&sup2;";
+                                    }
+                                @endphp
+                                <div class="bg-white p-3 rounded-xl border border-slate-200/60 shadow-2xs space-y-2">
+                                    <div class="font-bold text-slate-800 font-sans text-xs border-b border-slate-100 pb-1">
+                                        {{ $item->nama }}
+                                    </div>
+                                    <div class="space-y-0.5 text-[11px]">
+                                        <div class="text-emerald-800 font-bold">D<sup>+</sup>:</div>
+                                        <div class="text-slate-500 overflow-x-auto">
+                                            &radic;({!! implode(' + ', $dPlusParts) !!})
+                                        </div>
+                                        <div>
+                                            = <strong class="text-emerald-800 font-mono">{{ number_format($topsisData['dPlus'][$item->id], 6) }}</strong>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-0.5 text-[11px] pt-1 border-t border-slate-100">
+                                        <div class="text-rose-800 font-bold">D<sup>-</sup>:</div>
+                                        <div class="text-slate-500 overflow-x-auto">
+                                            &radic;({!! implode(' + ', $dMinusParts) !!})
+                                        </div>
+                                        <div>
+                                            = <strong class="text-rose-800 font-mono">{{ number_format($topsisData['dMinus'][$item->id], 6) }}</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
 
@@ -260,6 +451,42 @@
                         @endforeach
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Accordion formula Step 6 -->
+            <div class="pt-2 border-t border-slate-100">
+                <button type="button" wire:click="toggleStep(6)" class="w-full flex items-center justify-between text-xs font-semibold text-slate-500 hover:text-emerald-700 transition py-1">
+                    <span>Lihat Detail Perhitungan Nilai Preferensi (V<sub>i</sub>)</span>
+                    <span>{{ $showStep6Formula ? '▲ Sembunyikan' : '▼ Tampilkan' }}</span>
+                </button>
+                @if($showStep6Formula)
+                    <div class="mt-3 p-4 bg-slate-50 rounded-xl text-xs text-slate-600 font-mono space-y-3 leading-relaxed">
+                        <div class="text-slate-600 font-sans text-xs">
+                            Formula: V<sub>i</sub> = D<sub>i</sub><sup>-</sup> / (D<sub>i</sub><sup>+</sup> + D<sub>i</sub><sup>-</sup>)
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            @foreach($topsisData['results'] as $row)
+                                @php
+                                    $dp = $row['d_plus'];
+                                    $dm = $row['d_minus'];
+                                    $sumD = $dp + $dm;
+                                    $vScore = $row['preference_score'];
+                                @endphp
+                                <div class="bg-white p-3 rounded-xl border border-slate-200/60 shadow-2xs space-y-1">
+                                    <div class="font-bold text-slate-800 font-sans text-xs">
+                                        #{{ $row['rank'] }} - {{ $row['ibu_hamil']->nama ?? 'Pasien' }}:
+                                    </div>
+                                    <div class="text-slate-500 overflow-x-auto text-[11px]">
+                                        V = {{ number_format($dm, 4) }} / ({{ number_format($dp, 4) }} + {{ number_format($dm, 4) }})
+                                    </div>
+                                    <div class="text-[11px]">
+                                        = {{ number_format($dm, 4) }} / {{ number_format($sumD, 4) }} = <strong class="text-emerald-800 font-mono">{{ number_format($vScore, 6) }}</strong>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
 

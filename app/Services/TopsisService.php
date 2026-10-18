@@ -118,7 +118,7 @@ class TopsisService
         $criterionCodes = ['K1', 'K2', 'K3', 'K4'];
 
         if (!$ibuHamilCollection) {
-            $ibuHamilCollection = IbuHamil::all();
+            $ibuHamilCollection = IbuHamil::orderByRaw('CAST(REGEXP_SUBSTR(nama, "[0-9]+") AS UNSIGNED), nama, id')->get();
         }
 
         if ($ibuHamilCollection->isEmpty()) {
