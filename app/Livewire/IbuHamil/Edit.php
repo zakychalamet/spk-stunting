@@ -58,6 +58,10 @@ class Edit extends Component
 
     public function mount(IbuHamil $ibuHamil)
     {
+        if (!auth()->user()->canManageIbuHamil()) {
+            abort(403, 'Anda tidak memiliki hak akses untuk mengubah data ibu hamil.');
+        }
+
         $this->ibuHamil = $ibuHamil;
         $this->nama = $ibuHamil->nama;
         $this->tanggal_lahir = $ibuHamil->tanggal_lahir ? $ibuHamil->tanggal_lahir->format('Y-m-d') : '';
@@ -110,6 +114,10 @@ class Edit extends Component
 
     public function save()
     {
+        if (!auth()->user()->canManageIbuHamil()) {
+            abort(403, 'Anda tidak memiliki hak akses untuk mengubah data ibu hamil.');
+        }
+
         $this->validate();
 
         $this->ibuHamil->update([

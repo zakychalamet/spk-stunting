@@ -90,17 +90,23 @@
                     <span>{{ $showStep1 ? '▲ Sembunyikan' : '▼ Tampilkan' }}</span>
                 </button>
                 @if($showStep1)
-                    <div class="mt-3 p-4 bg-slate-50 rounded-xl text-xs text-slate-600 font-mono space-y-1.5 leading-relaxed">
-                        @foreach($criteria as $col)
+                    <div class="mt-3 p-4 bg-slate-50 rounded-xl text-xs text-slate-600 font-mono flex flex-col gap-3 leading-relaxed">
+                        @foreach($criteria as $colIndex => $col)
                             @php
                                 $colParts = [];
                                 foreach($criteria as $row) {
                                     $v = $detailData['matrix'][$row->id][$col->id] ?? 1;
                                     $colParts[] = ($v < 1) ? ('1/' . round(1/$v)) : round($v);
                                 }
+                                $colSum = $detailData['colSums'][$col->id] ?? 0;
                             @endphp
-                            <div>
-                                <strong>{{ $col->name }}</strong> = {{ implode(' + ', $colParts) }} = <strong>{{ number_format($detailData['colSums'][$col->id] ?? 0, 4) }}</strong>
+                            <div class="bg-white p-3 rounded-xl border border-slate-200/60 shadow-2xs flex flex-col gap-1.5">
+                                <div class="font-bold text-slate-800 font-sans text-xs">
+                                    {{ $col->code }} - {{ $col->name }} (Kolom {{ $colIndex + 1 }}):
+                                </div>
+                                <div class="text-slate-700">
+                                    {{ implode(' + ', $colParts) }} = <strong class="text-emerald-800">{{ number_format($colSum, 4) }}</strong>
+                                </div>
                             </div>
                         @endforeach
                     </div>
@@ -164,20 +170,34 @@
             <!-- Accordion formula Step 2 -->
             <div class="pt-2 border-t border-slate-100">
                 <button type="button" wire:click="toggleStep(2)" class="w-full flex items-center justify-between text-xs font-semibold text-slate-500 hover:text-emerald-700 transition py-1">
-                    <span>Lihat Contoh Pembagian Normalisasi</span>
+                    <span>Lihat Detail Perhitungan Normalisasi</span>
                     <span>{{ $showStep2 ? '▲ Sembunyikan' : '▼ Tampilkan' }}</span>
                 </button>
                 @if($showStep2)
-                    <div class="mt-3 p-4 bg-slate-50 rounded-xl text-xs text-slate-600 font-mono space-y-2 leading-relaxed">
-                        @php
-                            $first = $criteria->first();
-                        @endphp
-                        @if($first)
-                            <div>Contoh Baris 1, Kolom 1 ({{ $first->name }}, {{ $first->name }}):</div>
-                            <div class="pl-4">
-                                r<sub>11</sub> = 1 / {{ number_format($detailData['colSums'][$first->id] ?? 2, 4) }} = <strong>{{ number_format($detailData['normalizedMatrix'][$first->id][$first->id] ?? 0.49, 4) }}</strong>
+                    <div class="mt-3 p-4 bg-slate-50 rounded-xl text-xs text-slate-600 font-mono space-y-4 leading-relaxed">
+                        @foreach($criteria as $rowIndex => $row)
+                            <div class="space-y-1.5 border-b border-slate-200/60 pb-3 last:border-b-0 last:pb-0">
+                                <div class="font-bold text-slate-800 font-sans">
+                                    Baris {{ $rowIndex + 1 }} ({{ $row->name }}):
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 pl-2">
+                                    @foreach($criteria as $colIndex => $col)
+                                        @php
+                                            $val = $detailData['matrix'][$row->id][$col->id] ?? 1;
+                                            $valFormatted = ($row->id == $col->id) 
+                                                ? '1' 
+                                                : (($val < 1) ? round($val, 4) : round($val));
+                                            $colSum = $detailData['colSums'][$col->id] ?? 1;
+                                            $norm = $detailData['normalizedMatrix'][$row->id][$col->id] ?? 0;
+                                        @endphp
+                                        <div class="bg-white p-2 rounded-lg border border-slate-200/60 shadow-2xs">
+                                            <span class="text-slate-400">r<sub>{{ $rowIndex + 1 }}{{ $colIndex + 1 }}</sub></span> = {{ $valFormatted }} / {{ number_format($colSum, 4) }}<br>
+                                            = <strong class="text-emerald-800">{{ number_format($norm, 4) }}</strong>
+                                        </div>
+                                    @endforeach
+                                </div>
                             </div>
-                        @endif
+                        @endforeach
                     </div>
                 @endif
             </div>
@@ -226,6 +246,45 @@
                         @endforeach
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Accordion formula Step 3 -->
+            <div class="pt-2 border-t border-slate-100">
+                <button type="button" wire:click="toggleStep(3)" class="w-full flex items-center justify-between text-xs font-semibold text-slate-500 hover:text-emerald-700 transition py-1">
+                    <span>Lihat Detail Perhitungan Bobot Prioritas</span>
+                    <span>{{ $showStep3 ? '▲ Sembunyikan' : '▼ Tampilkan' }}</span>
+                </button>
+                @if($showStep3)
+                    <div class="mt-3 p-4 bg-slate-50 rounded-xl text-xs text-slate-600 font-mono space-y-3 leading-relaxed">
+                        @php
+                            $n = count($criteria);
+                        @endphp
+                        @foreach($criteria as $rowIndex => $row)
+                            @php
+                                $rowParts = [];
+                                foreach($criteria as $col) {
+                                    $norm = $detailData['normalizedMatrix'][$row->id][$col->id] ?? 0;
+                                    $rowParts[] = number_format($norm, 4);
+                                }
+                                $rowSum = $detailData['rowSums'][$row->id] ?? 0;
+                                $weight = $detailData['weights'][$row->id] ?? 0;
+                                $pct = $detailData['weightPercentages'][$row->id] ?? 0;
+                            @endphp
+                            <div class="bg-white p-3 rounded-xl border border-slate-200/60 shadow-2xs space-y-1">
+                                <div class="font-bold text-slate-800 font-sans text-xs">
+                                    {{ $row->code }} - {{ $row->name }} (w<sub>{{ $rowIndex + 1 }}</sub>):
+                                </div>
+                                <div class="text-slate-500">
+                                    w<sub>{{ $rowIndex + 1 }}</sub> = ({{ implode(' + ', $rowParts) }}) / {{ $n }}
+                                </div>
+                                <div>
+                                    w<sub>{{ $rowIndex + 1 }}</sub> = {{ number_format($rowSum, 4) }} / {{ $n }} = <strong class="text-emerald-800">{{ number_format($weight, 4) }}</strong>
+                                    <span class="text-slate-400 ml-1">(&times; 100% = <strong class="text-slate-700">{{ $pct }}%</strong>)</span>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
             </div>
         </div>
 

@@ -25,8 +25,17 @@ class Index extends Component
     public ?float $scaleMinValue = null;
     public ?float $scaleMaxValue = null;
 
+    protected function authorizeCriteriaManagement(): void
+    {
+        if (!auth()->user()->canManageCriteria()) {
+            abort(403, 'Anda tidak memiliki hak akses untuk mengelola kriteria dan skala penilaian.');
+        }
+    }
+
     public function openAddCriterionModal()
     {
+        $this->authorizeCriteriaManagement();
+
         $this->editingCriterionId = null;
         $nextNum = Criterion::count() + 1;
         $this->criterionCode = 'K' . $nextNum;
@@ -38,6 +47,8 @@ class Index extends Component
 
     public function editCriterion(int $id)
     {
+        $this->authorizeCriteriaManagement();
+
         $criterion = Criterion::findOrFail($id);
         $this->editingCriterionId = $criterion->id;
         $this->criterionCode = $criterion->code;
@@ -49,6 +60,8 @@ class Index extends Component
 
     public function saveCriterion()
     {
+        $this->authorizeCriteriaManagement();
+
         $rules = [
             'criterionCode' => 'required|string|max:10|unique:criteria,code,' . ($this->editingCriterionId ?? 'NULL') . ',id',
             'criterionName' => 'required|string|max:100',
@@ -87,6 +100,8 @@ class Index extends Component
 
     public function deleteCriterion(int $id)
     {
+        $this->authorizeCriteriaManagement();
+
         $criterion = Criterion::findOrFail($id);
         $criterionName = $criterion->name;
         $criterion->scales()->delete();
@@ -96,6 +111,8 @@ class Index extends Component
 
     public function openAddScaleModal(int $criterionId)
     {
+        $this->authorizeCriteriaManagement();
+
         $this->selectedCriterionId = $criterionId;
         $this->reset(['editingScaleId', 'scaleParameter', 'scaleScore', 'scaleLabel', 'scaleCategory', 'scaleMinValue', 'scaleMaxValue']);
         $this->scaleScore = 1;
@@ -105,6 +122,8 @@ class Index extends Component
 
     public function editScale(int $scaleId)
     {
+        $this->authorizeCriteriaManagement();
+
         $scale = CriterionScale::findOrFail($scaleId);
         $this->editingScaleId = $scale->id;
         $this->selectedCriterionId = $scale->criterion_id;
@@ -119,6 +138,8 @@ class Index extends Component
 
     public function saveScale()
     {
+        $this->authorizeCriteriaManagement();
+
         $this->validate([
             'scaleParameter' => 'required|string|max:100',
             'scaleScore' => 'required|integer|min:1|max:9',
@@ -159,6 +180,8 @@ class Index extends Component
 
     public function deleteScale(int $scaleId)
     {
+        $this->authorizeCriteriaManagement();
+
         $scale = CriterionScale::findOrFail($scaleId);
         $scale->delete();
         session()->flash('success', 'Skala penilaian berhasil dihapus.');

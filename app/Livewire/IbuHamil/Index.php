@@ -70,6 +70,10 @@ class Index extends Component
 
     public function confirmDelete(int $id, string $name)
     {
+        if (!auth()->user()->canManageIbuHamil()) {
+            abort(403, 'Anda tidak memiliki hak akses untuk menghapus data ibu hamil.');
+        }
+
         $this->deleteId = $id;
         $this->deleteName = $name;
         $this->showDeleteModal = true;
@@ -77,6 +81,10 @@ class Index extends Component
 
     public function delete()
     {
+        if (!auth()->user()->canManageIbuHamil()) {
+            abort(403, 'Anda tidak memiliki hak akses untuk menghapus data ibu hamil.');
+        }
+
         if ($this->deleteId) {
             $ibuHamil = IbuHamil::find($this->deleteId);
             if ($ibuHamil) {
@@ -92,6 +100,10 @@ class Index extends Component
 
     public function importExcel()
     {
+        if (!auth()->user()->canManageIbuHamil()) {
+            abort(403, 'Anda tidak memiliki hak akses untuk mengimpor data ibu hamil.');
+        }
+
         $this->validate([
             'importFile' => [
                 'required',

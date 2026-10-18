@@ -54,6 +54,13 @@ class Create extends Component
         'lila.required' => 'Lingkar Lengan Atas (LILA) wajib diisi.',
     ];
 
+    public function mount()
+    {
+        if (!auth()->user()->canManageIbuHamil()) {
+            abort(403, 'Anda tidak memiliki hak akses untuk menambahkan data ibu hamil.');
+        }
+    }
+
     public function updatedTanggalLahir($value)
     {
         if (!empty($value)) {
@@ -88,6 +95,10 @@ class Create extends Component
 
     public function save()
     {
+        if (!auth()->user()->canManageIbuHamil()) {
+            abort(403, 'Anda tidak memiliki hak akses untuk menambahkan data ibu hamil.');
+        }
+
         $this->validate();
 
         IbuHamil::create([

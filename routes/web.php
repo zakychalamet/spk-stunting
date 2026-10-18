@@ -36,8 +36,10 @@ Route::middleware(['auth'])->group(function () {
 
     // Ibu Hamil Management
     Route::get('/ibu-hamil', IbuHamilIndex::class)->name('ibu-hamil.index');
-    Route::get('/ibu-hamil/create', IbuHamilCreate::class)->name('ibu-hamil.create');
-    Route::get('/ibu-hamil/{ibuHamil}/edit', IbuHamilEdit::class)->name('ibu-hamil.edit');
+    Route::middleware(['role:admin,administrator,bidan'])->group(function () {
+        Route::get('/ibu-hamil/create', IbuHamilCreate::class)->name('ibu-hamil.create');
+        Route::get('/ibu-hamil/{ibuHamil}/edit', IbuHamilEdit::class)->name('ibu-hamil.edit');
+    });
     Route::get('/ibu-hamil/{ibuHamil}', IbuHamilShow::class)->name('ibu-hamil.show');
 
     // Excel Export & Template

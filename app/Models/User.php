@@ -56,6 +56,26 @@ class User extends Authenticatable
         return $this->role === 'ahli_gizi';
     }
 
+    public function canManageCriteria(): bool
+    {
+        return $this->isAdmin() || $this->isAhliGizi();
+    }
+
+    public function canManageIbuHamil(): bool
+    {
+        return $this->isAdmin() || $this->isBidan();
+    }
+
+    public function canCalculateAhp(): bool
+    {
+        return true;
+    }
+
+    public function canCalculateTopsis(): bool
+    {
+        return true;
+    }
+
     public function getRoleLabelAttribute(): string
     {
         return match ($this->role) {
