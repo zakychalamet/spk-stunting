@@ -282,7 +282,7 @@
 
                 <!-- Big Value -->
                 <div class="text-5xl sm:text-6xl font-black text-white tracking-tight my-1">
-                    {{ number_format($crVal, 3) }}
+                    {{ number_format($crVal, 4) }}
                 </div>
 
                 <!-- Criteria Condition & Description -->

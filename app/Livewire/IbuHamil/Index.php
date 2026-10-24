@@ -104,6 +104,8 @@ class Index extends Component
             abort(403, 'Anda tidak memiliki hak akses untuk mengimpor data ibu hamil.');
         }
 
+        $this->importMessage = null;
+
         $this->validate([
             'importFile' => [
                 'required',
@@ -120,22 +122,27 @@ class Index extends Component
             'importFile.required' => 'Silakan pilih file CSV/Excel terlebih dahulu.',
         ]);
 
-        $excelService = new ExcelService();
-        $res = $excelService->importIbuHamil($this->importFile->getRealPath());
+        try {
+            $excelService = new ExcelService();
+            $res = $excelService->importIbuHamil($this->importFile->getRealPath());
 
-        if ($res['success']) {
-            $count = $res['count'];
-            if ($count > 0) {
-                $this->showImportModal = false;
-                $this->reset('importFile');
-                $extra = !empty($res['errors']) ? ' (' . count($res['errors']) . ' baris dilewati karena format tidak sesuai)' : '';
-                session()->flash('success', "Berhasil mengimpor $count data ibu hamil.$extra");
+            if ($res['success']) {
+                $count = $res['count'];
+                if ($count > 0) {
+                    $this->showImportModal = false;
+                    $this->reset('importFile');
+                    $extra = !empty($res['errors']) ? ' (' . count($res['errors']) . ' baris dilewati karena format tidak sesuai)' : '';
+                    session()->flash('success', "Berhasil mengimpor $count data ibu hamil.$extra");
+                } else {
+                    $errMsg = !empty($res['errors']) ? implode(' ', array_slice($res['errors'], 0, 3)) : 'Tidak ada baris data yang berhasil diimpor.';
+                    $this->importMessage = mb_convert_encoding($errMsg, 'UTF-8', 'UTF-8, ISO-8859-1, Windows-1252');
+                }
             } else {
-                $errMsg = !empty($res['errors']) ? implode(', ', array_slice($res['errors'], 0, 3)) : 'Tidak ada data yang berhasil diimpor.';
-                $this->importMessage = $errMsg;
+                $errMsg = $res['message'] ?? 'Format file tidak sesuai template.';
+                $this->importMessage = mb_convert_encoding($errMsg, 'UTF-8', 'UTF-8, ISO-8859-1, Windows-1252');
             }
-        } else {
-            $this->importMessage = $res['message'] ?? 'Gagal mengimpor file.';
+        } catch (\Throwable $e) {
+            $this->importMessage = 'File tidak dapat diproses karena format atau karakter tidak sesuai template.';
         }
     }
 

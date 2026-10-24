@@ -289,8 +289,12 @@
                     </div>
 
                     @if($importMessage)
-                        <div class="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl">
-                            {{ $importMessage }}
+                        <div class="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl flex items-start gap-2.5">
+                            <svg class="w-4 h-4 text-rose-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <div class="flex-1">
+                                <span class="font-semibold block mb-0.5">Peringatan Impor:</span>
+                                <span>{{ $importMessage }}</span>
+                            </div>
                         </div>
                     @endif
                 </div>

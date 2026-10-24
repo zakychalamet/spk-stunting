@@ -189,6 +189,11 @@ class ExcelService
             return ['success' => false, 'message' => 'File kosong atau format salah.'];
         }
 
+        // Sanitize header encoding to valid UTF-8
+        $header = array_map(function ($col) {
+            return mb_convert_encoding((string) $col, 'UTF-8', 'UTF-8, ISO-8859-1, Windows-1252');
+        }, $header);
+
         // Map column headers dynamically
         $map = [];
         foreach ($header as $idx => $col) {
@@ -243,6 +248,15 @@ class ExcelService
             $map['berat_badan_sebelum_hamil'] = 10;
         }
 
+        // Strict header validation: must have mandatory columns
+        if (!isset($map['nama']) || (!isset($map['tanggal_lahir']) && !isset($map['hpht']))) {
+            fclose($file);
+            return [
+                'success' => false,
+                'message' => 'Format kolom file tidak sesuai dengan template. Pastikan file memuat kolom: Nama Lengkap, Tanggal Lahir, HPHT, Status Anemia, IMT, dan LILA.',
+            ];
+        }
+
         $countSuccess = 0;
         $errors = [];
         $rowNumber = 1;
@@ -252,6 +266,11 @@ class ExcelService
             if (empty(array_filter($row))) {
                 continue; // Skip blank lines
             }
+
+            // Convert row encoding to valid UTF-8
+            $row = array_map(function ($val) {
+                return mb_convert_encoding((string) $val, 'UTF-8', 'UTF-8, ISO-8859-1, Windows-1252');
+            }, $row);
 
             $nama = trim($row[$map['nama'] ?? 1] ?? '');
             if (empty($nama)) {

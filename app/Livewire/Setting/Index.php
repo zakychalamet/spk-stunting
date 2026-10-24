@@ -11,6 +11,7 @@ class Index extends Component
     public float $thresholdHigh = 0.80;
     public float $thresholdMedium = 0.60;
     public string $desaListText = '';
+    public ?array $notification = null;
 
     public function mount()
     {
@@ -22,6 +23,11 @@ class Index extends Component
             'Parakancanggah', 'Cendana', 'Krandegan', 'Semarang', 'Sokayasa', 'Sokanandi'
         ];
         $this->desaListText = implode(', ', $desaArray);
+    }
+
+    public function dismissNotification()
+    {
+        $this->notification = null;
     }
 
     public function save()
@@ -45,6 +51,11 @@ class Index extends Component
         Setting::set('desa_list', json_encode($desaArray));
 
         session()->flash('success', 'Pengaturan sistem berhasil disimpan.');
+        $this->notification = [
+            'type' => 'success',
+            'title' => 'Pengaturan Berhasil Disimpan!',
+            'message' => 'Perubahan identitas layanan kesehatan dan ambang batas prioritas TOPSIS telah berhasil disimpan.',
+        ];
     }
 
     public function render()
