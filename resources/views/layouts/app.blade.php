@@ -69,7 +69,7 @@
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
                     </svg>
-                    <span>Perhitungan Bobot</span>
+                    <span>Perhitungan Bobot (AHP)</span>
                 </a>
 
                 <!-- Perhitungan TOPSIS -->
@@ -141,19 +141,23 @@
 
             <!-- User profile header pill -->
             <div class="flex items-center gap-3">
-                <div class="flex items-center gap-2.5 pl-3 pr-4 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-full transition cursor-pointer">
-                    <div class="w-9 h-9 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-sm uppercase shadow-sm">
-                        {{ substr(auth()->user()->name ?? 'B', 0, 1) }}
-                    </div>
+                <a href="{{ route('setting.index') }}" class="flex items-center gap-2.5 pl-3 pr-4 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-full transition cursor-pointer">
+                    @if(auth()->user()?->profile_photo_url)
+                        <img src="{{ auth()->user()->profile_photo_url }}" alt="{{ auth()->user()->name }}" class="w-9 h-9 rounded-full object-cover shadow-sm border border-emerald-600/30">
+                    @else
+                        <div class="w-9 h-9 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-sm uppercase shadow-sm">
+                            {{ substr(auth()->user()->name ?? 'U', 0, 1) }}
+                        </div>
+                    @endif
                     <div class="text-left">
                         <div class="text-sm font-bold text-slate-800 leading-tight">
-                            {{ auth()->user()->name ?? 'Bidan Kesehatan' }}
+                            {{ auth()->user()->name ?? 'Pengguna' }}
                         </div>
                         <div class="text-xs text-emerald-700 font-bold uppercase tracking-wider">
                             {{ auth()->user()->role_label ?? 'Bidan' }}
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
         </header>
 

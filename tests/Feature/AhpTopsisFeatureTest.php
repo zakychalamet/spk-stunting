@@ -20,7 +20,9 @@ class AhpTopsisFeatureTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->user = User::first() ?? User::factory()->create(['role' => 'bidan']);
+        $this->user = User::where('role', 'ahli_gizi')->first() 
+            ?? User::where('role', 'bidan')->first() 
+            ?? User::factory()->create(['role' => 'ahli_gizi']);
     }
 
     public function test_criteria_page_is_accessible(): void

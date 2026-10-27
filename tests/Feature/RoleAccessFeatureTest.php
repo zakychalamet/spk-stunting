@@ -52,6 +52,43 @@ class RoleAccessFeatureTest extends TestCase
         );
     }
 
+    public function test_admin_cannot_access_or_manage_criteria(): void
+    {
+        // Admin can still view criteria list page (read-only)
+        $response = $this->actingAs($this->admin)->get('/kriteria');
+        $response->assertStatus(200);
+        $response->assertDontSee('Tambah Kriteria');
+
+        // Admin cannot mutate criteria
+        Livewire::actingAs($this->admin)
+            ->test(\App\Livewire\Criteria\Index::class)
+            ->set('criterionCode', 'KA')
+            ->set('criterionName', 'Kriteria Uji Admin')
+            ->set('criterionType', 'benefit')
+            ->call('saveCriterion')
+            ->assertStatus(403);
+    }
+
+    public function test_admin_cannot_calculate_ahp(): void
+    {
+        // Admin can still view AHP page (read-only)
+        $response = $this->actingAs($this->admin)->get('/perhitungan-bobot');
+        $response->assertStatus(200);
+        $response->assertSee('Perhitungan Bobot');
+        $response->assertDontSee('Hitung AHP');
+
+        // Admin cannot execute calculate or resetPairs mutation
+        Livewire::actingAs($this->admin)
+            ->test(\App\Livewire\Ahp\Comparison::class)
+            ->call('calculate')
+            ->assertStatus(403);
+
+        Livewire::actingAs($this->admin)
+            ->test(\App\Livewire\Ahp\Comparison::class)
+            ->call('resetPairs')
+            ->assertStatus(403);
+    }
+
     public function test_ahli_gizi_can_access_and_manage_criteria(): void
     {
         $response = $this->actingAs($this->ahliGizi)->get('/kriteria');

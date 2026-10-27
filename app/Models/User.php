@@ -17,6 +17,10 @@ class User extends Authenticatable
         'name',
         'username',
         'email',
+        'profile_photo_path',
+        'phone',
+        'nip',
+        'jabatan',
         'role',
         'password',
         'last_login_at',
@@ -58,7 +62,7 @@ class User extends Authenticatable
 
     public function canManageCriteria(): bool
     {
-        return $this->isAdmin() || $this->isAhliGizi();
+        return $this->role === 'ahli_gizi';
     }
 
     public function canManageIbuHamil(): bool
@@ -68,7 +72,7 @@ class User extends Authenticatable
 
     public function canCalculateAhp(): bool
     {
-        return true;
+        return in_array($this->role, ['ahli_gizi', 'bidan']);
     }
 
     public function canCalculateTopsis(): bool
@@ -84,5 +88,14 @@ class User extends Authenticatable
             'ahli_gizi' => 'Ahli Gizi',
             default => ucfirst($this->role),
         };
+    }
+
+    public function getProfilePhotoUrlAttribute(): ?string
+    {
+        if ($this->profile_photo_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($this->profile_photo_path)) {
+            return asset('storage/' . $this->profile_photo_path);
+        }
+
+        return null;
     }
 }

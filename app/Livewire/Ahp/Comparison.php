@@ -15,6 +15,13 @@ class Comparison extends Component
     public ?AhpCalculation $savedCalculation = null;
     public ?array $notification = null;
 
+    protected function authorizeAhpCalculation(): void
+    {
+        if (!auth()->user()->canCalculateAhp()) {
+            abort(403, 'Anda tidak memiliki hak akses untuk melakukan perhitungan AHP.');
+        }
+    }
+
     public function mount(AhpService $ahpService)
     {
         $this->savedCalculation = $ahpService->getActiveCalculation();
@@ -75,8 +82,17 @@ class Comparison extends Component
         }
     }
 
+    public function updated($propertyName)
+    {
+        if (str_starts_with($propertyName, 'pairwise')) {
+            $this->authorizeAhpCalculation();
+        }
+    }
+
     public function calculate(AhpService $ahpService)
     {
+        $this->authorizeAhpCalculation();
+
         $criteria = Criterion::orderBy('code')->get();
         $n = $criteria->count();
 
@@ -154,6 +170,8 @@ class Comparison extends Component
 
     public function resetPairs()
     {
+        $this->authorizeAhpCalculation();
+
         $this->initializePairs();
         $this->calculationResult = null;
         $this->notification = null;

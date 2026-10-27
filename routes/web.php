@@ -11,6 +11,7 @@ use App\Livewire\IbuHamil\Index as IbuHamilIndex;
 use App\Livewire\IbuHamil\Show as IbuHamilShow;
 use App\Livewire\Ranking\Show as RankingShow;
 use App\Livewire\Setting\Index as SettingIndex;
+use App\Livewire\Setting\Password as SettingPassword;
 use App\Livewire\Topsis\Calculation as TopsisCalculation;
 use App\Livewire\Topsis\Detail as TopsisDetail;
 use App\Livewire\User\Index as UserIndex;
@@ -68,6 +69,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Pengaturan
     Route::get('/pengaturan', SettingIndex::class)->name('setting.index');
+    Route::get('/pengaturan/ubah-sandi', SettingPassword::class)->name('setting.password');
 
     // Manajemen Pengguna (Admin Only)
     Route::middleware(['role:admin,administrator'])->group(function () {
