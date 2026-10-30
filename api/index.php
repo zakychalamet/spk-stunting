@@ -1,11 +1,14 @@
 <?php
 
-// Ensure required directories exist in Vercel writable /tmp space
+// Ensure required temporary directories exist in Vercel writable /tmp space
 $tmpDirectories = [
     '/tmp/storage/framework/views',
     '/tmp/storage/framework/cache',
+    '/tmp/storage/framework/cache/data',
     '/tmp/storage/framework/sessions',
     '/tmp/storage/logs',
+    '/tmp/storage/app/public',
+    '/tmp/bootstrap/cache',
 ];
 
 foreach ($tmpDirectories as $dir) {
