@@ -185,7 +185,7 @@
                             <td class="py-3.5 px-3">
                                 {{ $ibu ? number_format($ibu->imt, 2) : '-' }}
                             </td>
-                            <td class="py-3.5 px-3 {{ ($ibu && $ibu->lila < 23) ? 'text-red-600 font-bold' : '' }}">
+                            <td class="py-3.5 px-3 {{ ($ibu && $ibu->lila < 23.5) ? 'text-red-600 font-bold' : '' }}">
                                 {{ $ibu ? $ibu->lila . ' cm' : '-' }}
                             </td>
                             <td class="py-3.5 px-3">

@@ -116,7 +116,7 @@
                             <!-- LILA -->
                             <tr>
                                 <td class="py-3 px-3 font-semibold text-slate-800">LILA</td>
-                                <td class="py-3 px-3 font-medium">{{ $ibu->lila }} cm</td>
+                                <td class="py-3 px-3 font-medium {{ ($ibu && $ibu->lila < 23.5) ? 'text-red-600 font-bold' : '' }}">{{ $ibu->lila }} cm</td>
                                 <td class="py-3 px-3 text-center font-bold font-mono">{{ $topsisResult->score_lila }}</td>
                                 <td class="py-3 px-3 text-center">
                                     <span class="px-2 py-0.5 rounded text-xs font-semibold {{ $topsisResult->score_lila >= 4 ? 'bg-red-50 text-red-700' : 'bg-slate-100 text-slate-600' }}">

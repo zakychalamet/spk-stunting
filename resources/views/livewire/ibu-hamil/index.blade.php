@@ -139,7 +139,7 @@
                                     {{ $statusText }}
                                 </span>
                             </td>
-                            <td class="py-3.5 px-3 font-semibold {{ $row->lila < 23 ? 'text-red-600' : 'text-slate-700' }}">
+                            <td class="py-3.5 px-3 font-semibold {{ $row->lila < 23.5 ? 'text-red-600 font-bold' : 'text-slate-700' }}">
                                 {{ $row->lila }} cm
                             </td>
                             <td class="py-3.5 px-3">

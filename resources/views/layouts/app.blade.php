@@ -16,12 +16,28 @@
         body {
             font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
         }
+
+        @media print {
+            aside {
+                display: none !important;
+            }
+            header {
+                display: none !important;
+            }
+            body {
+                background: white !important;
+            }
+            main {
+                padding: 0 !important;
+                background: white !important;
+            }
+        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased h-screen flex overflow-hidden">
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex">
 
-    <!-- SIDEBAR (Static/Fixed - Tidak Ikut Ter-scroll) -->
-    <aside class="w-64 bg-[#085a3c] text-white flex flex-col justify-between shrink-0 h-screen sticky top-0 shadow-xl select-none z-30 overflow-y-auto">
+    <!-- SIDEBAR -->
+    <aside class="w-64 bg-[#085a3c] text-white flex flex-col justify-between shrink-0 shadow-xl select-none z-30 min-h-screen">
         <div>
             <!-- Header / Logo -->
             <div class="px-6 py-6 border-b border-emerald-800/60 flex items-center gap-3">
@@ -69,7 +85,7 @@
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
                     </svg>
-                    <span>Perhitungan Bobot (AHP)</span>
+                    <span>Perhitungan Bobot</span>
                 </a>
 
                 <!-- Perhitungan TOPSIS -->
@@ -78,7 +94,7 @@
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
                     </svg>
-                    <span>Perhitungan TOPSIS</span>
+                    <span>Hasil Pemeringkatan</span>
                 </a>
 
                 <!-- Pengguna -->
@@ -126,7 +142,7 @@
     </aside>
 
     <!-- MAIN CONTENT WRAPPER -->
-    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+    <div class="flex-1 flex flex-col min-w-0 min-h-screen">
         
         <!-- TOPBAR -->
         <header class="bg-white border-b border-slate-200/80 px-8 py-4 flex items-center justify-between shadow-xs shrink-0">
@@ -162,7 +178,7 @@
         </header>
 
         <!-- MAIN CONTENT -->
-        <main class="flex-1 overflow-y-auto p-8 bg-slate-50/70">
+        <main class="flex-1 p-8 bg-slate-50/70">
             <!-- Flash Message Banner -->
             @if(session()->has('success'))
                 <div class="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center justify-between shadow-xs">

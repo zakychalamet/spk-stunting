@@ -238,7 +238,7 @@ class TopsisService
                 $riskFactors[] = 'IMT';
             }
             if ($scores['K4'] >= 4) {
-                $riskFactors[] = 'Usia Kehamilan/Reproduksi';
+                $riskFactors[] = 'Usia Kehamilan';
             }
 
             $riskFactorsText = !empty($riskFactors) ? implode(', ', $riskFactors) : '-';
@@ -255,13 +255,25 @@ class TopsisService
                 $recs[] = 'Konseling gizi seimbang';
             }
             if ($scores['K4'] >= 4) {
-                $recs[] = 'Pemeriksaan kehamilan terpadu';
+                $usia = $ibuHamil->usia;
+                if ($usia < 20) {
+                    $recs[] = 'Kunjungan ANC lebih sering';
+                } elseif ($usia > 35) {
+                    $recs[] = 'Skrining tekanan darah dan gula darah';
+                } else {
+                    $recs[] = 'Pemeriksaan kehamilan terpadu';
+                }
             }
             if (empty($recs)) {
                 $recs[] = 'Pemantauan rutin dan edukasi kehamilan';
             }
 
-            $recommendationText = implode(' & ', array_slice($recs, 0, 2));
+            if (count($recs) <= 2) {
+                $recommendationText = implode(' & ', $recs);
+            } else {
+                $last = array_pop($recs);
+                $recommendationText = implode(', ', $recs) . ' & ' . $last;
+            }
 
             $results[] = [
                 'rank' => $rank++,
